@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { HeartPulse, Lock, Phone, Loader2, Mail, PencilLine } from "lucide-react";
 
 type LoginProps = {
-    onNavigateToRegistration: () => void;
     handleLogin: (identifier: string, password: string) => void | Promise<void>;
     loading: boolean;
 };
@@ -122,18 +121,6 @@ export default function Login({
                         </Button>
                     </form>
 
-                    {/* <div className="mt-6 text-center">
-                        <p className="text-gray-600">
-                            Belum punya akun?{" "}
-                            <button
-                                type="button"
-                                onClick={onNavigateToRegistration}
-                                className="text-teal-600 hover:text-teal-700 transition-colors cursor-pointer"
-                            >
-                                Daftar di sini
-                            </button>
-                        </p>
-                    </div> */}
                 </motion.div>
 
             </motion.div>
