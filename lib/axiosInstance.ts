@@ -3,9 +3,10 @@ import axios, {
     AxiosInstance,
     InternalAxiosRequestConfig,
 } from "axios";
+import { getToken, logout } from "@/lib/auth";
 
 // Ambil base URL dari .env
-const API_URL: string | undefined = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Buat instance axios
 const axiosInstance: AxiosInstance = axios.create({
@@ -45,6 +46,32 @@ axiosInstance.interceptors.response.use(
             message: data?.message || "Request failed",
             payload: data,
         });
+    }
+);
+
+// attach token
+axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    const token = getToken();
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
+// auto logout on 401 (token invalid/expired)
+axiosInstance.interceptors.response.use(
+    (res) => res,
+    (err) => {
+        const status = err?.response?.status;
+
+        if (status === 401 && typeof window !== "undefined") {
+            logout();
+            // redirect to login
+            window.location.href = "/auth/login";
+        }
+
+        // keep original error (so you can read err.response.data in pages)
+        return Promise.reject(err);
     }
 );
 

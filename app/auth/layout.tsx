@@ -1,5 +1,4 @@
-import "@/public/assets/css/home.css"
-
+import "@/app/home.css"
 
 export default function AuthLayout({
     children,

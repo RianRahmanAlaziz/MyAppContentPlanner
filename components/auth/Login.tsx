@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { HeartPulse, Lock, Phone, Loader2, Mail, PencilLine } from "lucide-react";
+import { Lock, Loader2, Mail, PencilLine } from "lucide-react";
 
 type LoginProps = {
     handleLogin: (identifier: string, password: string) => void | Promise<void>;

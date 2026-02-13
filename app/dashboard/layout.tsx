@@ -1,24 +1,22 @@
 "use client";
 
 import React, { useEffect } from "react";
-import "@/public/assets/css/app.css";
+import "@/app/app.css"
 import { useRouter } from "next/navigation";
-import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
+
 
 import Topbar from "@/components/layouts/Topbar";
 import Sidebar from "@/components/layouts/Sidebar";
 import Switcher from "@/components/layouts/Switcher";
 import Menumobile from "@/components/layouts/Menumobile";
+import RequireAdmin from "@/components/guards/RequireAdmin";
 import axiosInstance from "@/lib/axiosInstance";
 
 type DashboardLayoutProps = {
     children: React.ReactNode;
 };
 
-type RefreshResponse = {
-    access_token: string;
-};
+
 
 export default function DashboardLayout({
     children,
@@ -39,17 +37,20 @@ export default function DashboardLayout({
 
     return (
         <>
-            <div className="min-h-screen py-5 md:py-5 md:pr-5">
-                <Menumobile />
-                <Topbar handleLogout={handleLogout} />
-                <div className="flex overflow-hidden">
-                    <Sidebar />
-                    <div className="content">{children}</div>
+            <RequireAdmin>
+                <div className="min-h-screen py-5 md:py-5 md:pr-5">
+                    <Menumobile />
+                    <Topbar handleLogout={handleLogout} />
+                    <div className="flex overflow-hidden">
+                        <Sidebar />
+                        <div className="content">{children}</div>
+                    </div>
+                    <Switcher />
                 </div>
-                <Switcher />
-            </div>
 
-            <div id="modal-root" />
+                <div id="modal-root" />
+            </RequireAdmin>
+
         </>
     );
 }
