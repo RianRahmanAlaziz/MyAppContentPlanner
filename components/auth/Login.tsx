@@ -42,7 +42,7 @@ export default function Login({
                     transition={{ delay: 0.2 }}
                     className="bg-white rounded-3xl shadow-xl p-8"
                 >
-                    <h2 className="text-gray-900 mb-6 text-center">Masuk ke Akun Anda</h2>
+                    <h2 className="text-gray-900 mb-6 text-center"></h2>
 
                     <form
                         onSubmit={(e: React.FormEvent<HTMLFormElement>) => {

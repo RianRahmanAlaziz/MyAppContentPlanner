@@ -5292,7 +5292,7 @@ select {
    */
 /* Default colors */
 :root {
-  --color-primary: 22 78 99;
+  --color-primary: 37 99 235;
   --color-secondary: 226 232 240;
   --color-success: 13 148 136;
   --color-info: 6 182 212;

@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import "@/app/app.css"
 import { useRouter } from "next/navigation";
-
-
 import Topbar from "@/components/layouts/Topbar";
 import Sidebar from "@/components/layouts/Sidebar";
 import Switcher from "@/components/layouts/Switcher";
@@ -21,7 +19,6 @@ type DashboardLayoutProps = {
 export default function DashboardLayout({
     children,
 }: DashboardLayoutProps): React.ReactElement {
-    const router = useRouter(); // kalau tidak dipakai, boleh dihapus
 
     const handleLogout = async (): Promise<void> => {
         try {

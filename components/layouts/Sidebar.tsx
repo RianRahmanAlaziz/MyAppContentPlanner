@@ -3,6 +3,8 @@
 import React from "react";
 import Sidelink from "@/components/ui/sidelink";
 import {
+    Briefcase,
+    ChartNoAxesGantt,
     LayoutDashboard,
     SquareUser,
 
@@ -21,6 +23,16 @@ function Sidebar(): React.ReactElement {
                     href="/dashboard/users-management"
                     icon={<SquareUser />}
                 />
+                <Sidelink
+                    title="Workspace Management"
+                    icon={<Briefcase />}
+                >
+                    <Sidelink
+                        title="Workspace List"
+                        href="/dashboard/workspace/list"
+                        icon={<ChartNoAxesGantt />}
+                    />
+                </Sidelink>
             </ul>
         </nav>
     );

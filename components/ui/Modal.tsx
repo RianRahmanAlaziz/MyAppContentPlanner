@@ -25,49 +25,53 @@ function Modal({
         setMounted(true);
     }, []);
 
-    if (!mounted || !isOpen) return null;
+    if (!mounted) return null;
 
     const modalRoot = document.getElementById("modal-root");
     if (!modalRoot) return null;
 
     return createPortal(
         <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-9999 pt-32 flex items-start justify-center bg-black/50"
-            >
+            {isOpen && (
                 <motion.div
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="bg-white dark:bg-darkmode-600 rounded-lg shadow-lg p-6 w-3xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-9999 pt-32 flex items-start justify-center bg-black/50"
                 >
-                    <h3 className="text-lg font-bold">{title}</h3>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="bg-white dark:bg-darkmode-600 rounded-lg shadow-lg p-6 w-3xl"
+                    >
+                        <h3 className="text-lg font-bold">{title}</h3>
 
-                    <div className="my-5 grid grid-cols-12 gap-4 gap-y-3">{children}</div>
+                        <div className="my-5 grid grid-cols-12 gap-4 gap-y-3">
+                            {children}
+                        </div>
 
-                    <div className="flex justify-end">
-                        <button
-                            type="button"
-                            className="btn-dark w-20 mr-3 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
-                            onClick={onClose}
-                        >
-                            Close
-                        </button>
+                        <div className="flex justify-end">
+                            <button
+                                type="button"
+                                className="btn-secondary shadow-md w-20 mr-3 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
+                                onClick={onClose}
+                            >
+                                Close
+                            </button>
 
-                        <button
-                            type="button"
-                            onClick={() => onSave?.()}
-                            className="btn btn-secondary w-20 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
-                        >
-                            Save
-                        </button>
-                    </div>
+                            <button
+                                type="button"
+                                onClick={() => onSave?.()}
+                                className="btn btn-primary shadow-md  w-20 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </motion.div>
                 </motion.div>
-            </motion.div>
+            )}
         </AnimatePresence>,
         modalRoot
     );

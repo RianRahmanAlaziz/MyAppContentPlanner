@@ -11,7 +11,10 @@ import {
 
 
 export default function DashboardIndexPage(): React.ReactElement {
+    useEffect(() => {
+        document.title = "Dashboard | Content Planner";
 
+    }, []);
 
     return (
         <div className="col-span-12 mt-24">

@@ -9,12 +9,13 @@ import {
     ChevronsRight,
     LoaderCircle,
     Trash2,
+    Plus,
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { motion } from "framer-motion";
 import Modaldelete from "@/components/ui/Modaldelete";
-import useUser from "@/components/hooks/users/useUser";
-import InputUsers from "./InputUsers";
+import useWorkspaces from "@/components/hooks/workspaces/useWorkspaces";
+import InputWorkspace from "./InputWorkspace";
 
 type Modaldelete = {
     isOpenDelete: boolean;
@@ -25,11 +26,12 @@ type Modaldelete = {
 };
 
 
-function UsersList(): React.ReactElement {
+
+export default function WorkspaceList() {
     const {
         isOpen,
         isOpenDelete,
-        users,
+        workSpaces,
         loading,
         searchTerm,
         setSearchTerm,
@@ -43,23 +45,27 @@ function UsersList(): React.ReactElement {
         setIsOpen,
         setIsOpenDelete,
         handlePageChange,
-        handleSaveUser,
-        openAddUserModal,
-        openEditUserModal,
+        handleSave,
+        openAddModal,
+        openEditModal,
         openModalDelete,
-        handleDeleteUser,
-    } = useUser();
+        handleDelete,
+    } = useWorkspaces();
 
     useEffect(() => {
-        document.title = "Dashboard | Users Management";
+        document.title = "Dashboard | Workspace Management";
     }, []);
-
     return (
         <>
-            <h2 className="intro-y text-lg font-medium pt-24">Users Management</h2>
+            <h2 className="intro-y text-lg font-medium pt-24">Workspace Management</h2>
 
             <div className="grid grid-cols-12 gap-6 mt-5">
                 <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
+                    <button
+                        onClick={openAddModal}
+                        className="btn btn-primary shadow shadow-lg mr-2">
+                        <Plus className='pr-1.5' /> New Workspace
+                    </button>
                     <div className="hidden md:block mx-auto text-slate-500" />
 
                     <div className="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-auto md:ml-0">
@@ -86,7 +92,6 @@ function UsersList(): React.ReactElement {
                         <thead>
                             <tr>
                                 <th className="whitespace-nowrap">NAME</th>
-                                <th className="whitespace-nowrap">EMAIL</th>
                                 <th className="text-center whitespace-nowrap">ACTIONS</th>
                             </tr>
                         </thead>
@@ -100,28 +105,23 @@ function UsersList(): React.ReactElement {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : users.length > 0 ? (
-                                [...users]
+                            ) : workSpaces.length > 0 ? (
+                                [...workSpaces]
                                     .filter(
-                                        (u) =>
-                                            u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                            u.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                        (workspace) =>
+                                            workspace.name.toLowerCase().includes(searchTerm.toLowerCase())
                                     )
                                     .sort((a, b) => {
                                         const da = a.created_at ? new Date(a.created_at).getTime() : 0;
                                         const db = b.created_at ? new Date(b.created_at).getTime() : 0;
                                         return da - db;
                                     })
-                                    .map((u) => (
-                                        <motion.tr key={u.id} whileHover={{ scale: 1.02 }}>
+                                    .map((workspace) => (
+                                        <motion.tr key={workspace.id} whileHover={{ scale: 1.02 }}>
                                             <td>
                                                 <span className="font-medium whitespace-nowrap">
-                                                    {u.name}
+                                                    {workspace.name}
                                                 </span>
-                                            </td>
-
-                                            <td>
-                                                <div className="flex items-center">{u.email}</div>
                                             </td>
 
                                             <td className="table-report__action w-56">
@@ -129,17 +129,17 @@ function UsersList(): React.ReactElement {
 
                                                     <button
                                                         type="button"
-                                                        onClick={() => openEditUserModal(u)}
+                                                        onClick={() => openEditModal(workspace)}
                                                         className="flex items-center mr-3"
                                                     >
                                                         <CheckSquare className="w-4 h-4 mr-1" /> Edit
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        onClick={() => openModalDelete(u)}
-                                                        className="flex items-center mr-3"
+                                                        onClick={() => openModalDelete(workspace)}
+                                                        className="flex items-center mr-3 text-red-500"
                                                     >
-                                                        <Trash2 className="w-4 h-4 mr-1" /> Hapus
+                                                        <Trash2 className="w-4 h-4 mr-1 text" /> Hapus
                                                     </button>
                                                 </div>
                                             </td>
@@ -228,9 +228,9 @@ function UsersList(): React.ReactElement {
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
                 title={modalData.title}
-                onSave={handleSaveUser}
+                onSave={handleSave}
             >
-                <InputUsers
+                <InputWorkspace
                     formData={formData}
                     setFormData={setFormData}
                     errors={errors}
@@ -241,12 +241,10 @@ function UsersList(): React.ReactElement {
             <Modaldelete
                 isOpenDelete={isOpenDelete}
                 onClose={() => setIsOpenDelete(false)}
-                onDelete={handleDeleteUser}
+                onDelete={handleDelete}
                 title={modalDataDelete.title}
             >
             </Modaldelete>
         </>
-    );
+    )
 }
-
-export default UsersList;
