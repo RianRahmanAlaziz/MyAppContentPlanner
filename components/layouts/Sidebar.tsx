@@ -5,7 +5,10 @@ import Sidelink from "@/components/ui/sidelink";
 import {
     Briefcase,
     ChartNoAxesGantt,
+    FolderKanban,
     LayoutDashboard,
+    SquareDashedKanbanIcon,
+    SquareKanban,
     SquareUser,
 
 } from "lucide-react";
@@ -31,6 +34,11 @@ function Sidebar(): React.ReactElement {
                         title="Workspace List"
                         href="/dashboard/workspace/list"
                         icon={<ChartNoAxesGantt />}
+                    />
+                    <Sidelink
+                        title="Workspace Board"
+                        href="/dashboard/workspace/board"
+                        icon={<SquareDashedKanbanIcon />}
                     />
                 </Sidelink>
             </ul>

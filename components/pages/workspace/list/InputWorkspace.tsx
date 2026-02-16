@@ -87,6 +87,7 @@ export default function InputWorkspace({ formData, setFormData, errors, setError
                     <small className="text-danger">{errors.slug[0]}</small>
                 )}
             </div>
+
         </>
     )
 }
