@@ -12,6 +12,12 @@ export type WorkSpacesItem = {
     slug: string;
     owner_id: number | string;
     created_at?: string;
+    owner?: {
+        id: number | string;
+        name: string;
+        email?: string;
+        role?: string;
+    };
 };
 
 export type FieldErrors = Record<string, string[] | undefined>;

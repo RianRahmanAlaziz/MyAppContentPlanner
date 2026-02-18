@@ -92,6 +92,7 @@ export default function WorkspaceList() {
                         <thead>
                             <tr>
                                 <th className="whitespace-nowrap">NAME</th>
+                                <th className=" whitespace-nowrap">OWNER</th>
                                 <th className="text-center whitespace-nowrap">ACTIONS</th>
                             </tr>
                         </thead>
@@ -123,7 +124,11 @@ export default function WorkspaceList() {
                                                     {workspace.name}
                                                 </span>
                                             </td>
-
+                                            <td>
+                                                <span className="font-medium whitespace-nowrap ">
+                                                    {workspace.owner?.name}
+                                                </span>
+                                            </td>
                                             <td className="table-report__action w-56">
                                                 <div className="flex justify-center items-center">
 
