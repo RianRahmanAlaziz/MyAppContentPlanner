@@ -63,7 +63,7 @@ export default function WorkspaceList() {
                 <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
                     <button
                         onClick={openAddModal}
-                        className="btn btn-primary shadow shadow-lg mr-2">
+                        className="btn btn-primary shadow-lg mr-2">
                         <Plus className='pr-1.5' /> New Workspace
                     </button>
                     <div className="hidden md:block mx-auto text-slate-500" />

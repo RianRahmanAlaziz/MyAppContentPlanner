@@ -9,6 +9,7 @@ import {
     ChevronsRight,
     LoaderCircle,
     Trash2,
+    Plus,
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { motion } from "framer-motion";
@@ -60,6 +61,11 @@ function UsersList(): React.ReactElement {
 
             <div className="grid grid-cols-12 gap-6 mt-5">
                 <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
+                    <button
+                        onClick={openAddUserModal}
+                        className="btn btn-primary shadow-lg mr-2">
+                        <Plus className='pr-1.5' /> User
+                    </button>
                     <div className="hidden md:block mx-auto text-slate-500" />
 
                     <div className="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-auto md:ml-0">
@@ -87,6 +93,7 @@ function UsersList(): React.ReactElement {
                             <tr>
                                 <th className="whitespace-nowrap">NAME</th>
                                 <th className="whitespace-nowrap">EMAIL</th>
+                                <th className="whitespace-nowrap">LEVEL</th>
                                 <th className="text-center whitespace-nowrap">ACTIONS</th>
                             </tr>
                         </thead>
@@ -124,20 +131,23 @@ function UsersList(): React.ReactElement {
                                                 <div className="flex items-center">{u.email}</div>
                                             </td>
 
+                                            <td>
+                                                <div className="flex items-center">{u.role}</div>
+                                            </td>
+
                                             <td className="table-report__action w-56">
                                                 <div className="flex justify-center items-center">
-
                                                     <button
                                                         type="button"
                                                         onClick={() => openEditUserModal(u)}
-                                                        className="flex items-center mr-3"
+                                                        className="flex items-center mr-3 "
                                                     >
                                                         <CheckSquare className="w-4 h-4 mr-1" /> Edit
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => openModalDelete(u)}
-                                                        className="flex items-center mr-3"
+                                                        className="flex items-center mr-3 text-red-500"
                                                     >
                                                         <Trash2 className="w-4 h-4 mr-1" /> Hapus
                                                     </button>

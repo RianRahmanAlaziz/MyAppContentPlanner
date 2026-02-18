@@ -5,22 +5,20 @@ import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
-
-export type UserItem = {
+export type WorkSpacesMemberItem = {
     id: number | string;
-    name: string;
-    email: string;
+    workspace_id: number | string;
+    user_id: number | string;
     role: string;
     created_at?: string;
 };
 
 export type FieldErrors = Record<string, string[] | undefined>;
 
-export type FormDataUsers = {
-    name: string;
-    email: string;
+export type FormDataWorkSpacessMember = {
+    workspace_id: number | string;
+    user_id: number | string;
     role: string;
-    password: string;
 };
 
 export type Pagination = {
@@ -43,9 +41,9 @@ export type ModalDeleteData = {
     id?: number | string;
 };
 
-type UsersPaginatedResponse = {
+type WorkSpacessMemberPaginatedResponse = {
     data: {
-        data: UserItem[];
+        data: WorkSpacesMemberItem[];
         current_page: number;
         last_page: number;
         per_page: number;
@@ -53,21 +51,18 @@ type UsersPaginatedResponse = {
     };
 };
 
-export default function useUser() {
+export default function useWorkspacesMember() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
-
-    const [users, setUsers] = useState<UserItem[]>([]);
+    const [workSpacesMember, setWorkSpacesMember] = useState<WorkSpacesMemberItem[]>([]);
     const [errors, setErrors] = useState<FieldErrors>({});
     const [loading, setLoading] = useState<boolean>(true);
-
     const [searchTerm, setSearchTerm] = useState<string>("");
 
-    const [formData, setFormData] = useState<FormDataUsers>({
-        name: "",
-        email: "",
+    const [formData, setFormData] = useState<FormDataWorkSpacessMember>({
+        workspace_id: "",
+        user_id: "",
         role: "",
-        password: "",
     });
 
     const [pagination, setPagination] = useState<Pagination>({
@@ -87,14 +82,14 @@ export default function useUser() {
         title: "",
     });
 
-    const fetchUsers = async (page: number = 1, search: string = ""): Promise<void> => {
+    const fetchWorkSpacesMember = async (page: number = 1, search: string = ""): Promise<void> => {
         try {
-            const res = await axiosInstance.get<UsersPaginatedResponse>(
-                `/users?page=${page}&search=${encodeURIComponent(search)}`
+            const res = await axiosInstance.get<WorkSpacessMemberPaginatedResponse>(
+                `/workspace?page=${page}&search=${encodeURIComponent(search)}`
             );
 
             const paginated = res.data.data;
-            setUsers(paginated.data);
+            setWorkSpacesMember(paginated.data);
 
             setPagination({
                 current_page: paginated.current_page,
@@ -103,8 +98,8 @@ export default function useUser() {
                 total: paginated.total,
             });
         } catch (error: unknown) {
-            console.error("Gagal mengambil data user:", error);
-            toast.error("Gagal mengambil data user 😞");
+            console.error("Gagal mengambil data WorkSpace:", error);
+            toast.error("Gagal mengambil data WorkSpace 😞");
         } finally {
             setLoading(false);
         }
@@ -114,8 +109,8 @@ export default function useUser() {
         if (searchTerm.trim() !== "") setLoading(true);
 
         const timeout = window.setTimeout(() => {
-            // ✅ FIX: param fetchUsers(page, search)
-            void fetchUsers(1, searchTerm);
+
+            void fetchWorkSpacesMember(1, searchTerm);
         }, 500);
 
         return () => window.clearTimeout(timeout);
@@ -124,29 +119,29 @@ export default function useUser() {
     const handlePageChange = (page: number): void => {
         if (page < 1 || page > pagination.last_page) return;
         setLoading(true);
-        void fetchUsers(page, searchTerm);
+        void fetchWorkSpacesMember(page, searchTerm);
     };
 
-    const handleSaveUser = async (): Promise<void> => {
+    const handleSave = async (): Promise<void> => {
         const { mode, editId } = modalData;
 
         try {
-            const url = mode === "edit" ? `/users/${editId}` : "/users";
+            const url = mode === "edit" ? `/workspace/${editId}` : "/workspace";
             const method = mode === "edit" ? "put" : "post";
 
             await axiosInstance({ method, url, data: formData });
 
-            await fetchUsers();
+            await fetchWorkSpacesMember();
             setIsOpen(false);
-            setFormData({ name: "", email: "", password: "", role: "" });
+            setFormData({ workspace_id: "", user_id: "", role: "" });
             setErrors({});
 
-            if (mode === "edit") toast.info("User berhasil diperbarui");
-            else toast.success("User berhasil ditambahkan");
+            if (mode === "edit") toast.info("WorkSpaces berhasil diperbarui");
+            else toast.success("WorkSpaces berhasil ditambahkan");
         } catch (error: unknown) {
             const err = error as AxiosError<any>;
             console.error(
-                mode === "edit" ? "Gagal mengupdate user:" : "Gagal menambahkan user:",
+                mode === "edit" ? "Gagal mengupdate WorkSpaces:" : "Gagal menambahkan WorkSpaces:",
                 err.response?.data || err.message
             );
 
@@ -154,58 +149,57 @@ export default function useUser() {
             const fieldErrors = (err.response?.data as any)?.errors as FieldErrors | undefined;
             if (fieldErrors) setErrors(fieldErrors);
 
-            toast.error(mode === "edit" ? "Gagal memperbarui user ⚠️" : "Gagal menambahkan user 🚫");
+            toast.error(mode === "edit" ? "Gagal memperbarui WorkSpaces ⚠️" : "Gagal menambahkan WorkSpaces 🚫");
         }
     };
 
-    const openAddUserModal = (): void => {
-        setFormData({ name: "", email: "", role: "", password: "" });
+    const openAddModal = (): void => {
+        setFormData({ workspace_id: "", user_id: "", role: "" });
         setErrors({});
-        setModalData({ title: "Add New User", mode: "add", editId: null });
+        setModalData({ title: "Add New Workspaces", mode: "add", editId: null });
         setIsOpen(true);
     };
 
-    const openEditUserModal = (user: UserItem): void => {
+    const openEditModal = (workspaces: WorkSpacesMemberItem): void => {
         setFormData({
-            name: user.name ?? "",
-            email: user.email ?? "",
-            role: user.role ?? "",
-            password: "",
+            workspace_id: workspaces.workspace_id ?? "",
+            user_id: workspaces.user_id ?? "",
+            role: workspaces.role ?? "",
         });
 
         setErrors({});
-        setModalData({ title: "Edit User", mode: "edit", editId: user.id });
+        setModalData({ title: "Edit Workspaces", mode: "edit", editId: workspaces.id });
         setIsOpen(true);
     };
 
-    const openModalDelete = (user: UserItem): void => {
+    const openModalDelete = (workspaces: WorkSpacesMemberItem): void => {
         setModalDataDelete({
-            title: `Hapus user "${user.name}"?`,
-            id: user.id,
+            title: `Hapus WorkSpaces "${workspaces.role}"?`,
+            id: workspaces.id,
         });
         setIsOpenDelete(true);
     };
 
-    const handleDeleteUser = async (): Promise<void> => {
+    const handleDelete = async (): Promise<void> => {
         try {
             if (modalDataDelete.id == null) return;
 
-            await axiosInstance.delete(`/users/${modalDataDelete.id}`);
+            await axiosInstance.delete(`/workspaces/${modalDataDelete.id}`);
 
-            await fetchUsers();
+            await fetchWorkSpacesMember();
             setIsOpenDelete(false);
-            toast.success("User berhasil dihapus 🗑️");
+            toast.success("WorkSpaces berhasil dihapus 🗑️");
         } catch (error: unknown) {
             const err = error as AxiosError<any>;
-            console.error("Gagal menghapus user:", err.response?.data || err.message);
-            toast.error("Gagal menghapus user ❌");
+            console.error("Gagal menghapus WorkSpaces:", err.response?.data || err.message);
+            toast.error("Gagal menghapus WorkSpaces ❌");
         }
     };
 
     return {
         isOpen,
         isOpenDelete,
-        users,
+        workSpacesMember,
         loading,
         searchTerm,
         setSearchTerm,
@@ -219,10 +213,10 @@ export default function useUser() {
         setIsOpen,
         setIsOpenDelete,
         handlePageChange,
-        handleSaveUser,
-        openAddUserModal,
-        openEditUserModal,
+        handleSave,
+        openAddModal,
+        openEditModal,
         openModalDelete,
-        handleDeleteUser,
+        handleDelete,
     };
 }
