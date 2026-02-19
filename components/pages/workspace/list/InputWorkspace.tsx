@@ -69,7 +69,7 @@ export default function InputWorkspace({
         const fetchUsers = async () => {
             try {
                 // sesuaikan kalau response kamu beda
-                const res = await axiosInstance.get("/users");
+                const res = await axiosInstance.get("/admin/users");
                 const list: UserItem[] = res.data?.data?.data ?? res.data?.data ?? [];
 
                 setUsers(list);

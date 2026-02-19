@@ -10,6 +10,7 @@ import {
     LoaderCircle,
     Trash2,
     Plus,
+    Settings2,
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { motion } from "framer-motion";
@@ -50,6 +51,7 @@ export default function WorkspaceList() {
         openEditModal,
         openModalDelete,
         handleDelete,
+        openRoute,
     } = useWorkspaces();
 
     useEffect(() => {
@@ -129,13 +131,19 @@ export default function WorkspaceList() {
                                                     {workspace.owner?.name}
                                                 </span>
                                             </td>
-                                            <td className="table-report__action w-56">
+                                            <td className="table-report__action w-80">
                                                 <div className="flex justify-center items-center">
-
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openRoute(workspace)}
+                                                        className="flex items-center mr-3 text-primary"
+                                                    >
+                                                        <Settings2 className="w-4 h-4 mr-1 text" /> Manage Members
+                                                    </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => openEditModal(workspace)}
-                                                        className="flex items-center mr-3"
+                                                        className="flex items-center mr-3 text-warning"
                                                     >
                                                         <CheckSquare className="w-4 h-4 mr-1" /> Edit
                                                     </button>
@@ -144,7 +152,7 @@ export default function WorkspaceList() {
                                                         onClick={() => openModalDelete(workspace)}
                                                         className="flex items-center mr-3 text-red-500"
                                                     >
-                                                        <Trash2 className="w-4 h-4 mr-1 text" /> Hapus
+                                                        <Trash2 className="w-4 h-4 mr-1" /> Hapus
                                                     </button>
                                                 </div>
                                             </td>

@@ -90,7 +90,7 @@ export default function useUser() {
     const fetchUsers = async (page: number = 1, search: string = ""): Promise<void> => {
         try {
             const res = await axiosInstance.get<UsersPaginatedResponse>(
-                `/users?page=${page}&search=${encodeURIComponent(search)}`
+                `/admin/users?page=${page}&search=${encodeURIComponent(search)}`
             );
 
             const paginated = res.data.data;
@@ -131,7 +131,7 @@ export default function useUser() {
         const { mode, editId } = modalData;
 
         try {
-            const url = mode === "edit" ? `/users/${editId}` : "/users";
+            const url = mode === "edit" ? `/admin/users/${editId}` : "/admin/users";
             const method = mode === "edit" ? "put" : "post";
 
             await axiosInstance({ method, url, data: formData });
@@ -190,7 +190,7 @@ export default function useUser() {
         try {
             if (modalDataDelete.id == null) return;
 
-            await axiosInstance.delete(`/users/${modalDataDelete.id}`);
+            await axiosInstance.delete(`/admin/users/${modalDataDelete.id}`);
 
             await fetchUsers();
             setIsOpenDelete(false);

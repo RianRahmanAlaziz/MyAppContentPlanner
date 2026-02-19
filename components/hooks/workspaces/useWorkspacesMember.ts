@@ -5,19 +5,18 @@ import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
-export type WorkSpacesMemberItem = {
-    id: number | string;
-    workspace_id: number | string;
-    user_id: number | string;
-    role: string;
-    created_at?: string;
+export type MemberItem = {
+    user_id: number;
+    name: string;
+    email: string;
+    workspace_role: "owner" | "editor" | "reviewer" | "viewer";
+    is_owner: boolean;
 };
 
 export type FieldErrors = Record<string, string[] | undefined>;
 
-export type FormDataWorkSpacessMember = {
-    workspace_id: number | string;
-    user_id: number | string;
+export type FormDataMember = {
+    email: string;
     role: string;
 };
 
@@ -33,17 +32,25 @@ export type ModalMode = "add" | "edit";
 export type ModalData = {
     title: string;
     mode: ModalMode;
-    editId: number | string | null;
+    editUserId: number | null;
 };
 
 export type ModalDeleteData = {
     title: string;
-    id?: number | string;
+    userId?: number;
 };
 
-type WorkSpacessMemberPaginatedResponse = {
+type IndexResponse = {
+    message: string;
+    meta: {
+        workspace: {
+            id: number;
+            name: string;
+            slug?: string | null;
+        };
+    };
     data: {
-        data: WorkSpacesMemberItem[];
+        data: MemberItem[];
         current_page: number;
         last_page: number;
         per_page: number;
@@ -51,18 +58,18 @@ type WorkSpacessMemberPaginatedResponse = {
     };
 };
 
-export default function useWorkspacesMember() {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
-    const [workSpacesMember, setWorkSpacesMember] = useState<WorkSpacesMemberItem[]>([]);
+export default function useWorkspacesMember(workspaceId: string) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [isOpenDelete, setIsOpenDelete] = useState(false);
+    const [workspaceName, setWorkspaceName] = useState("");
+    const [members, setMembers] = useState<MemberItem[]>([]);
     const [errors, setErrors] = useState<FieldErrors>({});
-    const [loading, setLoading] = useState<boolean>(true);
-    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
 
-    const [formData, setFormData] = useState<FormDataWorkSpacessMember>({
-        workspace_id: "",
-        user_id: "",
-        role: "",
+    const [formData, setFormData] = useState<FormDataMember>({
+        email: "",
+        role: "viewer",
     });
 
     const [pagination, setPagination] = useState<Pagination>({
@@ -75,22 +82,26 @@ export default function useWorkspacesMember() {
     const [modalData, setModalData] = useState<ModalData>({
         title: "",
         mode: "add",
-        editId: null,
+        editUserId: null,
     });
 
     const [modalDataDelete, setModalDataDelete] = useState<ModalDeleteData>({
         title: "",
+        userId: undefined,
     });
 
-    const fetchWorkSpacesMember = async (page: number = 1, search: string = ""): Promise<void> => {
+    const fetchMembers = async (page: number = 1, search: string = "") => {
+        if (!workspaceId) return;
+
+        setLoading(true);
         try {
-            const res = await axiosInstance.get<WorkSpacessMemberPaginatedResponse>(
-                `/workspace?page=${page}&search=${encodeURIComponent(search)}`
+            const res = await axiosInstance.get<IndexResponse>(
+                `/admin/workspace/${workspaceId}/members?page=${page}&search=${encodeURIComponent(search)}`
             );
+            setWorkspaceName(res.data?.meta?.workspace?.name ?? "");
 
             const paginated = res.data.data;
-            setWorkSpacesMember(paginated.data);
-
+            setMembers(paginated.data);
             setPagination({
                 current_page: paginated.current_page,
                 last_page: paginated.last_page,
@@ -98,108 +109,109 @@ export default function useWorkspacesMember() {
                 total: paginated.total,
             });
         } catch (error: unknown) {
-            console.error("Gagal mengambil data WorkSpace:", error);
-            toast.error("Gagal mengambil data WorkSpace 😞");
+            console.error("Gagal mengambil member:", error);
+            toast.error("Gagal mengambil member 😞");
         } finally {
             setLoading(false);
         }
     };
 
+    // debounce search
     useEffect(() => {
-        if (searchTerm.trim() !== "") setLoading(true);
+        const t = window.setTimeout(() => {
+            void fetchMembers(1, searchTerm);
+        }, 400);
 
-        const timeout = window.setTimeout(() => {
+        return () => window.clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchTerm, workspaceId]);
 
-            void fetchWorkSpacesMember(1, searchTerm);
-        }, 500);
+    // first load
+    useEffect(() => {
+        void fetchMembers(1, "");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [workspaceId]);
 
-        return () => window.clearTimeout(timeout);
-    }, [searchTerm]);
-
-    const handlePageChange = (page: number): void => {
+    const handlePageChange = (page: number) => {
         if (page < 1 || page > pagination.last_page) return;
-        setLoading(true);
-        void fetchWorkSpacesMember(page, searchTerm);
+        void fetchMembers(page, searchTerm);
     };
 
-    const handleSave = async (): Promise<void> => {
-        const { mode, editId } = modalData;
-
-        try {
-            const url = mode === "edit" ? `/workspace/${editId}` : "/workspace";
-            const method = mode === "edit" ? "put" : "post";
-
-            await axiosInstance({ method, url, data: formData });
-
-            await fetchWorkSpacesMember();
-            setIsOpen(false);
-            setFormData({ workspace_id: "", user_id: "", role: "" });
-            setErrors({});
-
-            if (mode === "edit") toast.info("WorkSpaces berhasil diperbarui");
-            else toast.success("WorkSpaces berhasil ditambahkan");
-        } catch (error: unknown) {
-            const err = error as AxiosError<any>;
-            console.error(
-                mode === "edit" ? "Gagal mengupdate WorkSpaces:" : "Gagal menambahkan WorkSpaces:",
-                err.response?.data || err.message
-            );
-
-            // kalau backend kirim error field, simpan ke state errors
-            const fieldErrors = (err.response?.data as any)?.errors as FieldErrors | undefined;
-            if (fieldErrors) setErrors(fieldErrors);
-
-            toast.error(mode === "edit" ? "Gagal memperbarui WorkSpaces ⚠️" : "Gagal menambahkan WorkSpaces 🚫");
-        }
-    };
-
-    const openAddModal = (): void => {
-        setFormData({ workspace_id: "", user_id: "", role: "" });
+    const openAddModal = () => {
+        setFormData({ email: "", role: "" });
         setErrors({});
-        setModalData({ title: "Add New Workspaces", mode: "add", editId: null });
+        setModalData({ title: "Add New Member", mode: "add", editUserId: null });
         setIsOpen(true);
     };
 
-    const openEditModal = (workspaces: WorkSpacesMemberItem): void => {
-        setFormData({
-            workspace_id: workspaces.workspace_id ?? "",
-            user_id: workspaces.user_id ?? "",
-            role: workspaces.role ?? "",
-        });
-
+    const openEditModal = (m: MemberItem) => {
+        setFormData({ email: m.email, role: m.workspace_role });
         setErrors({});
-        setModalData({ title: "Edit Workspaces", mode: "edit", editId: workspaces.id });
+        setModalData({ title: `Edit Role — ${m.name}`, mode: "edit", editUserId: m.user_id });
         setIsOpen(true);
     };
 
-    const openModalDelete = (workspaces: WorkSpacesMemberItem): void => {
-        setModalDataDelete({
-            title: `Hapus WorkSpaces "${workspaces.role}"?`,
-            id: workspaces.id,
-        });
+    const openModalDelete = (m: MemberItem) => {
+        setModalDataDelete({ title: `Hapus member "${m.name}"?`, userId: m.user_id });
         setIsOpenDelete(true);
     };
 
-    const handleDelete = async (): Promise<void> => {
+    const handleSave = async () => {
         try {
-            if (modalDataDelete.id == null) return;
+            setErrors({});
 
-            await axiosInstance.delete(`/workspaces/${modalDataDelete.id}`);
+            if (modalData.mode === "add") {
+                await axiosInstance.post(`/admin/workspace/${workspaceId}/members`, formData);
+                toast.success("Member berhasil ditambahkan");
+            } else {
+                if (!modalData.editUserId) return;
 
-            await fetchWorkSpacesMember();
-            setIsOpenDelete(false);
-            toast.success("WorkSpaces berhasil dihapus 🗑️");
+                // sesuai route kamu: PUT .../members/{user}
+                await axiosInstance.put(
+                    `/admin/workspace/${workspaceId}/members/${modalData.editUserId}`,
+                    { role: formData.role }
+                );
+                toast.info("Role berhasil diperbarui");
+            }
+
+            setIsOpen(false);
+            await fetchMembers(pagination.current_page, searchTerm);
         } catch (error: unknown) {
             const err = error as AxiosError<any>;
-            console.error("Gagal menghapus WorkSpaces:", err.response?.data || err.message);
-            toast.error("Gagal menghapus WorkSpaces ❌");
+            const status = err.response?.status;
+            const data = err.response?.data;
+
+            // format error kamu: { success:false, message:"Validation failed", error:{details:{...}} }
+            const details = data?.error?.details;
+            if (status === 422 && details) {
+                setErrors(details);
+                toast.error(data?.message || "Validasi gagal");
+                return;
+            }
+
+            toast.error(data?.message || "Gagal menyimpan");
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            if (!modalDataDelete.userId) return;
+
+            await axiosInstance.delete(`/admin/workspace/${workspaceId}/members/${modalDataDelete.userId}`);
+            toast.success("Member berhasil dihapus 🗑️");
+
+            setIsOpenDelete(false);
+            await fetchMembers(pagination.current_page, searchTerm);
+        } catch (error: unknown) {
+            const err = error as AxiosError<any>;
+            toast.error(err.response?.data?.message || "Gagal menghapus member ❌");
         }
     };
 
     return {
         isOpen,
         isOpenDelete,
-        workSpacesMember,
+        members,
         loading,
         searchTerm,
         setSearchTerm,
@@ -218,5 +230,6 @@ export default function useWorkspacesMember() {
         openEditModal,
         openModalDelete,
         handleDelete,
+        workspaceName,
     };
 }

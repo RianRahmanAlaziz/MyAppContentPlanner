@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
-
+import { useRouter } from "next/navigation";
 
 export type WorkSpacesItem = {
     id: number | string;
@@ -62,7 +62,7 @@ export default function useWorkspaces() {
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
-
+    const router = useRouter();
     const [workSpaces, setWorkSpaces] = useState<WorkSpacesItem[]>([]);
     const [errors, setErrors] = useState<FieldErrors>({});
     const [loading, setLoading] = useState<boolean>(true);
@@ -95,7 +95,7 @@ export default function useWorkspaces() {
     const fetchWorkSpaces = async (page: number = 1, search: string = ""): Promise<void> => {
         try {
             const res = await axiosInstance.get<WorkSpacesPaginatedResponse>(
-                `/workspace?page=${page}&search=${encodeURIComponent(search)}`
+                `/admin/workspace?page=${page}&search=${encodeURIComponent(search)}`
             );
 
             const paginated = res.data.data;
@@ -136,7 +136,7 @@ export default function useWorkspaces() {
         const { mode, editId } = modalData;
 
         try {
-            const url = mode === "edit" ? `/workspace/${editId}` : "/workspace";
+            const url = mode === "edit" ? `/admin/workspace/${editId}` : "/admin/workspace";
             const method = mode === "edit" ? "put" : "post";
 
             await axiosInstance({ method, url, data: formData });
@@ -194,7 +194,7 @@ export default function useWorkspaces() {
         try {
             if (modalDataDelete.id == null) return;
 
-            await axiosInstance.delete(`/workspaces/${modalDataDelete.id}`);
+            await axiosInstance.delete(`/admin/workspace/${modalDataDelete.id}`);
 
             await fetchWorkSpaces();
             setIsOpenDelete(false);
@@ -204,6 +204,10 @@ export default function useWorkspaces() {
             console.error("Gagal menghapus WorkSpaces:", err.response?.data || err.message);
             toast.error("Gagal menghapus WorkSpaces ❌");
         }
+    };
+
+    const openRoute = (workspace: WorkSpacesItem) => {
+        router.push(`/dashboard/workspace/${workspace.id}/members`);
     };
 
     return {
@@ -228,5 +232,6 @@ export default function useWorkspaces() {
         openEditModal,
         openModalDelete,
         handleDelete,
+        openRoute
     };
 }
