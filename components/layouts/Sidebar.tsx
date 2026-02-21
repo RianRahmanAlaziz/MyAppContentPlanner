@@ -32,7 +32,7 @@ function Sidebar(): React.ReactElement {
                 >
                     <Sidelink
                         title="Workspace List"
-                        href="/dashboard/workspace/list"
+                        href="/dashboard/workspace"
                         icon={<ChartNoAxesGantt />}
                     />
                     <Sidelink
@@ -41,6 +41,12 @@ function Sidebar(): React.ReactElement {
                         icon={<SquareDashedKanbanIcon />}
                     />
                 </Sidelink>
+
+                <Sidelink
+                    title="Content Management"
+                    href="/dashboard/contents"
+                    icon={<SquareUser />}
+                />
             </ul>
         </nav>
     );

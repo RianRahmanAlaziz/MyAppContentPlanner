@@ -55,6 +55,8 @@ export default function WorkspaceMember() {
         workspaceName,
     } = useWorkspacesMember(workspaceId);
 
+    const existingEmails = members.map((m) => m.email);
+
     useEffect(() => {
         document.title = "Dashboard | Workspace Management";
     }, []);
@@ -137,15 +139,16 @@ export default function WorkspaceMember() {
                                                     >
                                                         <CheckSquare className="w-4 h-4 mr-1" /> Edit
                                                     </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openModalDelete(m)}
-                                                        className="flex items-center mr-3 text-red-500"
-                                                        disabled={m.is_owner} // owner tidak boleh dihapus
-                                                        title={m.is_owner ? "Owner tidak bisa dihapus" : "Remove member"}
-                                                    >
-                                                        <Trash2 className="w-4 h-4 mr-1" /> Hapus
-                                                    </button>
+                                                    {m.workspace_role !== "owner" && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openModalDelete(m)}
+                                                            className="flex items-center mr-3 text-red-500"
+                                                            title="Remove member"
+                                                        >
+                                                            <Trash2 className="w-4 h-4 mr-1" /> Hapus
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </motion.tr>
@@ -236,10 +239,12 @@ export default function WorkspaceMember() {
                 onSave={handleSave}
             >
                 <InputWorkspaceMember
+                    mode={modalData.mode}
                     formData={formData}
                     setFormData={setFormData}
                     errors={errors}
                     setErrors={setErrors}
+                    existingMembers={existingEmails}
                 />
             </Modal>
 

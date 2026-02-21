@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { ToggleRight, Heart, PencilLine } from "lucide-react";
 import { useRouter } from "next/navigation";
+import AppBreadcrumb from "./AppBreadcrumb";
 
 type TopbarProps = {
     handleLogout: () => void | Promise<void>;
@@ -52,7 +53,8 @@ function Topbar({ handleLogout }: TopbarProps) {
                 </Link>
 
                 {/* Breadcrumb */}
-                <nav aria-label="breadcrumb" className="-intro-x h-[45px] mr-auto">
+                <AppBreadcrumb />
+                {/* <nav aria-label="breadcrumb" className="-intro-x h-[45px] mr-auto">
                     <ol className="breadcrumb breadcrumb-light">
                         <li className="breadcrumb-item">
                             <a href="#">Application</a>
@@ -61,7 +63,7 @@ function Topbar({ handleLogout }: TopbarProps) {
                             Dashboard
                         </li>
                     </ol>
-                </nav>
+                </nav> */}
 
                 {/* Account Menu */}
                 <div className="intro-x dropdown w-8 h-8" ref={accountRef}>

@@ -12,12 +12,13 @@
 
 /* Warna teks di dropdown (options) */
 .react-select__option {
-    color: rgb(var(--color-slate-400) / 0.9) !important;
+    color: #1e293b !important;
 }
 
 .dark .react-select__single-value {
     color: #e5e7eb !important;
 }
+
 
 .dark .react-select__placeholder {
     color: rgb(var(--color-slate-500) / 0.8) !important;
@@ -74,4 +75,26 @@
 .dark .react-select__menu {
     background-color: rgb(var(--color-darkmode-800) / 1) !important;
     border-color: rgb(var(--color-slate-700) / 0.6) !important;
+}
+
+/* Hover / focused option */
+.react-select__option--is-focused {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+    /* ganti sesuai warna */
+    color: #1e293b !important;
+}
+
+.react-select__option--is-selected {
+    background-color: rgb(var(--color-slate-200) / 1) !important;
+    color: #1e293b !important;
+}
+
+.dark .react-select__option--is-focused {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+    color: #1e293b !important;
+}
+
+.dark .react-select__option--is-selected {
+    background-color: rgb(var(--color-slate-200) / 1) !important;
+    color: #1e293b !important;
 }
