@@ -208,6 +208,26 @@ export default function useWorkspacesMember(workspaceId: string) {
         }
     };
 
+    const updateRole = async (userId: number, role: MemberItem["workspace_role"]) => {
+        if (!workspaceId) return;
+
+        // optimistic update
+        const prev = members;
+        setMembers((curr) =>
+            curr.map((m) => (m.user_id === userId ? { ...m, workspace_role: role } : m))
+        );
+
+        try {
+            await axiosInstance.put(`/admin/workspace/${workspaceId}/members/${userId}`, { role });
+            toast.success("Role updated");
+        } catch (error: unknown) {
+            const err = error as AxiosError<any>;
+            toast.error(err.response?.data?.message || "Gagal update role");
+            // revert
+            setMembers(prev);
+        }
+    };
+
     return {
         isOpen,
         isOpenDelete,
@@ -231,5 +251,6 @@ export default function useWorkspacesMember(workspaceId: string) {
         openModalDelete,
         handleDelete,
         workspaceName,
+        updateRole
     };
 }

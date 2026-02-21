@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
+import Select, { SingleValue } from "react-select";
 import {
     CheckSquare,
     ChevronLeft,
@@ -25,6 +26,15 @@ type Modaldelete = {
     title?: string;
     children?: React.ReactNode; // ✅ tambahkan ini
 };
+
+type RoleOption = { value: "owner" | "editor" | "reviewer" | "viewer"; label: string };
+
+const ROLE_OPTIONS: RoleOption[] = [
+    { value: "owner", label: "Owner" },
+    { value: "editor", label: "Editor" },
+    { value: "reviewer", label: "Reviewer" },
+    { value: "viewer", label: "Viewer" },
+];
 
 export default function WorkspaceMember() {
     const params = useParams<{ id: string }>();
@@ -49,10 +59,10 @@ export default function WorkspaceMember() {
         handlePageChange,
         handleSave,
         openAddModal,
-        openEditModal,
         openModalDelete,
         handleDelete,
         workspaceName,
+        updateRole
     } = useWorkspacesMember(workspaceId);
 
     const existingEmails = members.map((m) => m.email);
@@ -127,18 +137,27 @@ export default function WorkspaceMember() {
                                                 <span className="font-medium whitespace-nowrap">{m.name}</span>
                                                 <div className="text-slate-500 text-xs whitespace-nowrap mt-0.5">{m.email}</div>
                                             </td>
-                                            <td>
-                                                <span className="font-medium whitespace-nowrap uppercase">{m.workspace_role}</span>
+                                            <td className="whitespace-nowrap">
+                                                <div className="min-w-45">
+                                                    <Select<RoleOption, false>
+                                                        classNamePrefix="react-select"
+                                                        isSearchable={false}
+                                                        options={ROLE_OPTIONS}
+                                                        value={ROLE_OPTIONS.find((o) => o.value === m.workspace_role) || ROLE_OPTIONS[0]}
+                                                        onChange={(opt: SingleValue<RoleOption>) => {
+                                                            if (!opt) return;
+                                                            if (opt.value === m.workspace_role) return;
+                                                            // proteksi: jangan ubah owner via select (opsional)
+                                                            if (m.workspace_role === "owner") return;
+
+                                                            updateRole(m.user_id, opt.value);
+                                                        }}
+                                                        isDisabled={m.workspace_role === "owner"} // owner tidak bisa diubah
+                                                    />
+                                                </div>
                                             </td>
                                             <td className="table-report__action w-56">
                                                 <div className="flex justify-center items-center">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openEditModal(m)}
-                                                        className="flex items-center mr-3 text-warning"
-                                                    >
-                                                        <CheckSquare className="w-4 h-4 mr-1" /> Edit
-                                                    </button>
                                                     {m.workspace_role !== "owner" && (
                                                         <button
                                                             type="button"

@@ -28,6 +28,11 @@ function Sidebar(): React.ReactElement {
                 />
                 <Sidelink
                     title="Workspace Management"
+                    href="/dashboard/workspace"
+                    icon={<Briefcase />}
+                />
+                {/* <Sidelink
+                    title="Workspace Management"
                     icon={<Briefcase />}
                 >
                     <Sidelink
@@ -40,12 +45,12 @@ function Sidebar(): React.ReactElement {
                         href="/dashboard/workspace/board"
                         icon={<SquareDashedKanbanIcon />}
                     />
-                </Sidelink>
+                </Sidelink> */}
 
                 <Sidelink
                     title="Content Management"
                     href="/dashboard/contents"
-                    icon={<SquareUser />}
+                    icon={<FolderKanban />}
                 />
             </ul>
         </nav>

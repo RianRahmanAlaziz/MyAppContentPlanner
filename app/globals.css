@@ -98,3 +98,15 @@
     background-color: rgb(var(--color-slate-200) / 1) !important;
     color: #1e293b !important;
 }
+
+/* === Cursor pointer untuk seluruh react-select === */
+.react-select__control,
+.react-select__control *,
+.react-select__menu,
+.react-select__menu *,
+.react-select__option,
+.react-select__indicators,
+.react-select__dropdown-indicator,
+.react-select__indicator-separator {
+    cursor: pointer !important;
+}
