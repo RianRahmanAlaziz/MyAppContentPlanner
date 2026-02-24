@@ -14,6 +14,7 @@ type SidelinkProps = {
     href?: string;
     children?: React.ReactNode;
     cls?: string;
+    match?: "exact" | "prefix";
 };
 
 function toTooltipId(title: string) {
@@ -26,6 +27,7 @@ function sidelink({
     href = "/",
     children,
     cls = "",
+    match
 }: SidelinkProps): React.ReactElement {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -46,7 +48,15 @@ function sidelink({
         });
     }, [children, hasChildren, pathname]);
 
-    const isDirectActive = Boolean(href && pathname === href);
+    const isDirectActive = useMemo(() => {
+        if (!href) return false;
+
+        if (match === "exact") return pathname === href;
+
+        // prefix + boundary aman
+        return pathname === href || pathname.startsWith(`${href}/`);
+    }, [href, match, pathname]);
+
     const isActive = isDirectActive || isChildActive;
 
     useEffect(() => {

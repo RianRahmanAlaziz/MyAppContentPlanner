@@ -17,7 +17,7 @@ function Sidebar(): React.ReactElement {
     return (
         <nav className="side-nav side-nav--simple">
             <ul>
-                <Sidelink href="/dashboard" title="Dashboard" icon={<LayoutDashboard />} />
+                <Sidelink href="/dashboard" title="Dashboard" match="exact" icon={<LayoutDashboard />} />
 
                 <li className="side-nav__devider my-6" />
 
@@ -26,12 +26,20 @@ function Sidebar(): React.ReactElement {
                     href="/dashboard/users-management"
                     icon={<SquareUser />}
                 />
+                {/* side admin */}
                 <Sidelink
                     title="Workspace Management"
                     href="/dashboard/workspace"
+                    match="prefix"
                     icon={<Briefcase />}
                 />
-                {/* <Sidelink
+                <Sidelink
+                    title="Content Management"
+                    href="/dashboard/contents"
+                    icon={<FolderKanban />}
+                />
+                {/* side user */}
+                <Sidelink
                     title="Workspace Management"
                     icon={<Briefcase />}
                 >
@@ -45,13 +53,7 @@ function Sidebar(): React.ReactElement {
                         href="/dashboard/workspace/board"
                         icon={<SquareDashedKanbanIcon />}
                     />
-                </Sidelink> */}
-
-                <Sidelink
-                    title="Content Management"
-                    href="/dashboard/contents"
-                    icon={<FolderKanban />}
-                />
+                </Sidelink>
             </ul>
         </nav>
     );
