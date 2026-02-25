@@ -7,6 +7,7 @@ import {
     ChartNoAxesGantt,
     FileSpreadsheet,
     FolderKanban,
+    LaptopMinimalCheck,
     LayoutDashboard,
     SquareDashedKanbanIcon,
     SquareKanban,
@@ -43,6 +44,11 @@ function Sidebar(): React.ReactElement {
                     title="Audit Logs"
                     href="/dashboard/admin/audit-logs"
                     icon={<FileSpreadsheet />}
+                />
+                <Sidelink
+                    title="Workspace Management"
+                    href="/dashboard/workspace"
+                    icon={<LaptopMinimalCheck />}
                 />
                 {/* side user */}
                 {/* <Sidelink
