@@ -17,9 +17,9 @@ import useContents, {
     ContentStatus,
     Platform,
     Priority,
-} from "@/components/hooks/contents/useContents";
-import useWorkspaceOptions from "@/components/hooks/workspaces/useWorkspaceOptions";
-import useUserOptions from "@/components/hooks/users/useUserOptions";
+} from "@/components/hooks/admin/contents/useContents";
+import useWorkspaceOptions from "@/components/hooks/admin/workspaces/useWorkspaceOptions";
+import useUserOptions from "@/components/hooks/admin/users/useUserOptions";
 
 // ---------- react-select option type ----------
 type Option<T extends string | number> = { value: T; label: string };
@@ -416,10 +416,6 @@ export default function ContentsList() {
                                 </button>
                             </li>
                         </ul>
-
-                        <div className="text-center text-slate-500 text-xs mt-2">
-                            Page {pagination.current_page} / {pagination.last_page} — Total {pagination.total}
-                        </div>
                     </nav>
                 </div>
             </div>

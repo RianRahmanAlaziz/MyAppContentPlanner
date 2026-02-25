@@ -1,6 +1,6 @@
 "use client";
 import WorkspaceBoard from '@/components/pages/workspace/board/WorkspaceBoard'
-import { useWorkspaceBoard } from "@/components/hooks/workspaces/useWorkspaceBoard";
+import { useWorkspaceBoard } from "@/components/hooks/admin/workspaces/useWorkspaceBoard";
 import type { ContentStatus } from "@/components/pages/workspace/types/content";
 
 export default function WorkspacePageBoard() {

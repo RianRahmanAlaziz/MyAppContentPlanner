@@ -1915,8 +1915,8 @@ select {
 }
 
 .dark .btn-outline-primary {
-  --tw-border-opacity: 1;
-  border-color: rgb(var(--color-primary) / var(--tw-border-opacity));
+  border-color: #fff;
+  color: #fff;
 }
 
 .btn-outline-primary:hover:not(:disabled) {

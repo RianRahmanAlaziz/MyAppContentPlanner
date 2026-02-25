@@ -4,6 +4,8 @@ import React, { useMemo } from "react";
 import Select, { SingleValue } from "react-select";
 import AsyncSelect from "react-select/async";
 import type { Filters } from "@/components/hooks/admin/auditlogs/useAuditLogs";
+import axiosInstance from "@/lib/axiosInstance";
+import { AuditDateRangePicker } from "./AuditDateRangePicker";
 
 type Option = { value: string; label: string };
 
@@ -39,43 +41,46 @@ const PER_PAGE_OPTIONS = [
     { value: "100", label: "100 / page" },
 ];
 
-const loadActors = async (inputValue: string) => {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users?search=${inputValue}`,
-        {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-                Accept: "application/json",
-            },
-        }
-    );
+/** Ambil array rows dari response yang beda-beda bentuk */
+function extractRows(res: any): any[] {
+    // 1) AdminUser/AdminWorkspace: { message, data: paginator } => paginator.data
+    const p1 = res?.data?.data?.data;
+    if (Array.isArray(p1)) return p1;
 
-    const data = await res.json();
+    // 2) AdminContents: { data: ResourceCollection, meta, links }
+    // bisa jadi res.data.data.data atau res.data.data
+    const p2 = res?.data?.data?.data;
+    if (Array.isArray(p2)) return p2;
 
-    return data.data.map((u: any) => ({
-        value: u.id,
+    const p3 = res?.data?.data;
+    if (Array.isArray(p3)) return p3;
+
+    return [];
+}
+
+/** ACTOR: /admin/users?search= */
+const loadActors = async (inputValue: string): Promise<Option[]> => {
+    const res = await axiosInstance.get("/admin/users", {
+        params: { search: inputValue, page: 1 },
+    });
+
+    const rows = extractRows(res);
+    return rows.map((u: any) => ({
+        value: String(u.id),
         label: `${u.name} (${u.email})`,
     }));
 };
 
-const loadEntityOptions = (entityType: string) => async (inputValue: string) => {
-    if (!entityType) return [];
+/** WORKSPACE: /admin/workspace?search= */
+const loadWorkspaces = async (inputValue: string): Promise<Option[]> => {
+    const res = await axiosInstance.get("/admin/workspace", {
+        params: { search: inputValue, page: 1 },
+    });
 
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/search-entity?type=${entityType}&search=${inputValue}`,
-        {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-                Accept: "application/json",
-            },
-        }
-    );
-
-    const data = await res.json();
-
-    return data.data.map((e: any) => ({
-        value: e.id,
-        label: `${entityType} #${e.id} - ${e.title ?? e.name ?? ""}`,
+    const rows = extractRows(res);
+    return rows.map((w: any) => ({
+        value: String(w.id),
+        label: `${w.name}${w.slug ? ` (${w.slug})` : ""}`,
     }));
 };
 
@@ -93,7 +98,7 @@ export default function AuditLogFilters({
         [filters.event]
     );
 
-    const selectedEntity = useMemo(
+    const selectedEntityType = useMemo(
         () => ENTITY_OPTIONS.find((o) => o.value === filters.entity_type) || ENTITY_OPTIONS[0],
         [filters.entity_type]
     );
@@ -103,6 +108,9 @@ export default function AuditLogFilters({
         [filters.per_page]
     );
 
+    const [selectedActor, setSelectedActor] = React.useState<Option | null>(null);
+    const [selectedWorkspace, setSelectedWorkspace] = React.useState<Option | null>(null);
+
     return (
         <>
             <div className="intro-y col-span-12 grid grid-cols-12 gap-3 items-end">
@@ -110,7 +118,7 @@ export default function AuditLogFilters({
                     <label className="form-label">Search</label>
                     <input
                         type="text"
-                        className="form-control box"
+                        className="form-control "
                         placeholder="Search..."
                         value={filters.q}
                         disabled={loading}
@@ -118,7 +126,7 @@ export default function AuditLogFilters({
                     />
                 </div>
 
-                <div className="col-span-12 md:col-span-4">
+                <div className="col-span-12 md:col-span-2">
                     <label className="form-label">Event</label>
                     <Select<Option, false>
                         classNamePrefix="react-select"
@@ -132,71 +140,64 @@ export default function AuditLogFilters({
                     />
                 </div>
 
-                <div className="col-span-12 md:col-span-4">
-                    <label className="form-label">Entity</label>
+                {/* Entity Type */}
+                <div className="col-span-12 md:col-span-2">
+                    <label className="form-label">Entity Type</label>
                     <Select<Option, false>
                         classNamePrefix="react-select"
                         isSearchable={false}
                         isDisabled={loading}
                         options={ENTITY_OPTIONS}
-                        value={selectedEntity}
+                        value={selectedEntityType}
                         onChange={(opt: SingleValue<Option>) =>
-                            setFilters((p) => ({ ...p, entity_type: opt?.value || "" }))
-                        }
-                    />
-                </div>
-
-                <div className="col-span-12 md:col-span-3">
-                    <label className="form-label">Entity</label>
-                    <AsyncSelect
-                        cacheOptions
-                        defaultOptions
-                        isDisabled={loading || !filters.entity_type}
-                        loadOptions={loadEntityOptions(filters.entity_type)}
-                        onChange={(option: any) =>
                             setFilters((p) => ({
                                 ...p,
-                                entity_id: option?.value?.toString() || "",
+                                entity_type: opt?.value || "",
+                                entity_id: "", // reset supaya tidak nyangkut
                             }))
-                        }
-                        placeholder={
-                            filters.entity_type
-                                ? "Search entity..."
-                                : "Pilih entity type dulu"
                         }
                     />
                 </div>
 
-                <div className="col-span-12 md:col-span-3">
-                    <label className="form-label">Actor</label>
-                    <AsyncSelect
+                {/* Actor */}
+                <div className="col-span-12 md:col-span-2">
+                    <label className="form-label">User</label>
+                    <AsyncSelect<Option, false>
+                        classNamePrefix="react-select"
                         cacheOptions
                         defaultOptions
+                        isClearable
                         isDisabled={loading}
                         loadOptions={loadActors}
-                        onChange={(option: any) =>
-                            setFilters((p) => ({
-                                ...p,
-                                actor_id: option?.value?.toString() || "",
-                            }))
-                        }
-                        placeholder="Search user..."
+                        value={selectedActor}
+                        onChange={(opt) => {
+                            setSelectedActor(opt ?? null); // ⬅️ simpan label aslinya
+                            setFilters((p) => ({ ...p, actor_id: opt?.value || "" }));
+                        }}
+                        placeholder="Cari user..."
                     />
                 </div>
 
-                <div className="col-span-12 md:col-span-3">
-                    <label className="form-label">Workspace ID</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="e.g. 2"
-                        value={filters.workspace_id}
-                        disabled={loading}
-                        onChange={(e) => setFilters((p) => ({ ...p, workspace_id: e.target.value }))}
+                {/* Workspace */}
+                <div className="col-span-12 md:col-span-2">
+                    <label className="form-label">Workspace</label>
+                    <AsyncSelect<Option, false>
+                        classNamePrefix="react-select"
+                        cacheOptions
+                        defaultOptions
+                        isClearable
+                        isDisabled={loading}
+                        loadOptions={loadWorkspaces}
+                        value={selectedWorkspace}
+                        onChange={(opt) => {
+                            setSelectedWorkspace(opt ?? null); // ⬅️ simpan label
+                            setFilters((p) => ({ ...p, workspace_id: opt?.value || "" }));
+                        }}
+                        placeholder="Cari workspace..."
                     />
                 </div>
 
-                <div className="col-span-6 md:col-span-3">
+                <div className="col-span-6 md:col-span-4">
                     <label className="form-label">Per Page</label>
                     <Select<Option, false>
                         classNamePrefix="react-select"
@@ -210,25 +211,14 @@ export default function AuditLogFilters({
                     />
                 </div>
 
-                <div className="col-span-6 md:col-span-2">
-                    <label className="form-label">From</label>
-                    <input
-                        type="date"
-                        className="form-control"
-                        value={filters.from}
-                        disabled={loading}
-                        onChange={(e) => setFilters((p) => ({ ...p, from: e.target.value }))}
-                    />
-                </div>
-
-                <div className="col-span-6 md:col-span-2">
-                    <label className="form-label">To</label>
-                    <input
-                        type="date"
-                        className="form-control"
-                        value={filters.to}
-                        disabled={loading}
-                        onChange={(e) => setFilters((p) => ({ ...p, to: e.target.value }))}
+                <div className="col-span-12 md:col-span-4">
+                    <AuditDateRangePicker
+                        loading={loading}
+                        from={filters.from}
+                        to={filters.to}
+                        onChange={(nextFrom, nextTo) =>
+                            setFilters((p) => ({ ...p, from: nextFrom, to: nextTo }))
+                        }
                     />
                 </div>
 

@@ -1,4 +1,4 @@
-import WorkspaceMember from "@/components/pages/workspace/member/WorkspaceMember";
+import WorkspaceMember from "@/components/pages/admin/workspace/member/WorkspaceMember";
 
 
 export default function WorkspacePageMember() {

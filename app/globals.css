@@ -54,6 +54,7 @@
 .dark .react-select__control {
     background-color: rgb(var(--color-darkmode-800) / 1) !important;
     border-color: transparent !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
 }
 
 .dark .react-select__control--is-focused {
@@ -109,4 +110,123 @@
 .react-select__dropdown-indicator,
 .react-select__indicator-separator {
     cursor: pointer !important;
+}
+
+/* === React Select Disabled (setara .form-control:disabled / [readonly]) === */
+.react-select__control--is-disabled {
+    cursor: not-allowed !important;
+    --tw-bg-opacity: 1;
+    background-color: rgb(var(--color-slate-100) / var(--tw-bg-opacity)) !important;
+}
+
+/* Dark mode */
+.dark .react-select__control--is-disabled {
+    border-color: transparent !important;
+    background-color: rgb(var(--color-darkmode-800) / 0.5) !important;
+}
+
+/* Pastikan semua elemen di dalamnya juga not-allowed */
+.react-select__control--is-disabled,
+.react-select__control--is-disabled * {
+    cursor: not-allowed !important;
+}
+
+/* === Date Range control (mirip react-select__control) === */
+.audit-daterange__control {
+    border-radius: 0.375rem;
+    border: 1px solid rgb(var(--color-slate-200) / 1);
+    background-color: #fff !important;
+    /* penting: ngalahin rule global */
+    opacity: 1 !important;
+    /* penting: ngalahin rule global */
+    transition: all 0.2s ease;
+    box-shadow: none;
+    height: 38px;
+    padding: 0 0.75rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Disabled beneran (kalau memang loading) */
+.audit-daterange__control:disabled {
+    cursor: not-allowed !important;
+    background-color: rgb(var(--color-slate-100) / 1) !important;
+    opacity: 1 !important;
+    /* biar ga pudar banget */
+}
+
+.audit-daterange__control:disabled * {
+    cursor: not-allowed !important;
+}
+
+/* placeholder & value mirip react-select */
+.audit-daterange__value {
+    color: #1e293b;
+}
+
+.audit-daterange__placeholder {
+    color: rgb(var(--color-slate-400) / 0.9);
+}
+
+/* focus ring mirip react-select__control--is-focused */
+.audit-daterange__control:focus,
+.audit-daterange__control:focus-visible {
+    border-color: rgb(var(--color-primary) / 0.4);
+    box-shadow: 0 0 0 4px rgb(var(--color-primary) / 0.2);
+    outline: none;
+}
+
+/* disabled mirip react-select__control--is-disabled */
+.audit-daterange__control[aria-disabled="true"] {
+    cursor: not-allowed;
+    background-color: rgb(var(--color-slate-100) / 1);
+}
+
+.audit-daterange__control[aria-disabled="true"] * {
+    cursor: not-allowed;
+}
+
+/* dark mode */
+.dark .audit-daterange__control {
+    border-color: transparent;
+    --tw-bg-opacity: 1;
+    background-color: rgb(var(--color-darkmode-800) / var(--tw-bg-opacity)) !important;
+    transition-property: none;
+}
+
+.dark .audit-daterange__control:focus,
+.dark .audit-daterange__control:focus-visible {
+    border-color: rgb(var(--color-slate-700) / 0.6);
+    box-shadow: 0 0 0 4px rgb(var(--color-slate-700) / 0.3);
+}
+
+/* dark value/placeholder (samakan react-select overrides) */
+.dark .audit-daterange__value {
+    color: #e5e7eb;
+}
+
+.dark .audit-daterange__placeholder {
+    color: rgb(var(--color-slate-500) / 0.8);
+}
+
+/* cursor pointer */
+.audit-daterange__control,
+.audit-daterange__control * {
+    cursor: pointer;
+}
+
+/* === Popup container (biar nyatu) === */
+.audit-daterange__popover {
+    background-color: #fff;
+    border: 1px solid rgb(var(--color-slate-200) / 1);
+    border-radius: 0.75rem;
+    /* rounded-xl */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dark .audit-daterange__popover {
+    background-color: rgb(var(--color-darkmode-800) / 1);
+    border-color: rgb(var(--color-slate-700) / 0.6);
 }

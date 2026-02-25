@@ -10,6 +10,7 @@ type ModalProps = {
     title: string;
     children: React.ReactNode;
     onSave?: () => void | Promise<void>;
+    hideSave?: boolean;
 };
 
 function Modal({
@@ -18,6 +19,7 @@ function Modal({
     title,
     children,
     onSave,
+    hideSave,
 }: ModalProps): React.ReactElement | null {
     const [mounted, setMounted] = useState<boolean>(false);
 
@@ -61,13 +63,15 @@ function Modal({
                                 Close
                             </button>
 
-                            <button
-                                type="button"
-                                onClick={() => onSave?.()}
-                                className="btn btn-primary shadow-md  w-20 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
-                            >
-                                Save
-                            </button>
+                            {!hideSave && (
+                                <button
+                                    type="button"
+                                    onClick={() => onSave?.()}
+                                    className="btn btn-primary shadow-md w-20 rounded-lg"
+                                >
+                                    Save
+                                </button>
+                            )}
                         </div>
                     </motion.div>
                 </motion.div>

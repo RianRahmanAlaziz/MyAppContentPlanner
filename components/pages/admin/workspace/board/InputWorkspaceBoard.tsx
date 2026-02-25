@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Platform, Priority } from "@/components/pages/workspace/types/content";
-import type { CreateContentPayload } from "@/components/hooks/workspaces/useWorkspaceBoard";
+import type { CreateContentPayload } from "@/components/hooks/admin/workspaces/useWorkspaceBoard";
 
 type Props = {
     open: boolean;

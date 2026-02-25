@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { motion } from "framer-motion";
+import { useParams } from "next/navigation";
+import Select, { SingleValue } from "react-select";
 import {
     CheckSquare,
     ChevronLeft,
@@ -10,13 +13,11 @@ import {
     LoaderCircle,
     Trash2,
     Plus,
-    Settings2,
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
-import { motion } from "framer-motion";
 import Modaldelete from "@/components/ui/Modaldelete";
-import useWorkspaces from "@/components/hooks/workspaces/useWorkspaces";
-import InputWorkspace from "./InputWorkspace";
+import useWorkspacesMember from "@/components/hooks/admin/workspaces/useWorkspacesMember";
+import InputWorkspaceMember from "./InputWorkspaceMember";
 
 type Modaldelete = {
     isOpenDelete: boolean;
@@ -26,13 +27,23 @@ type Modaldelete = {
     children?: React.ReactNode; // ✅ tambahkan ini
 };
 
+type RoleOption = { value: "owner" | "editor" | "reviewer" | "viewer"; label: string };
 
+const ROLE_OPTIONS: RoleOption[] = [
+    { value: "owner", label: "Owner" },
+    { value: "editor", label: "Editor" },
+    { value: "reviewer", label: "Reviewer" },
+    { value: "viewer", label: "Viewer" },
+];
 
-export default function WorkspaceList() {
+export default function WorkspaceMember() {
+    const params = useParams<{ slug: string }>();
+    const workspaceId = params.slug;
+
     const {
         isOpen,
         isOpenDelete,
-        workSpaces,
+        members,
         loading,
         searchTerm,
         setSearchTerm,
@@ -48,25 +59,27 @@ export default function WorkspaceList() {
         handlePageChange,
         handleSave,
         openAddModal,
-        openEditModal,
         openModalDelete,
         handleDelete,
-        openRoute,
-    } = useWorkspaces();
+        workspaceName,
+        updateRole
+    } = useWorkspacesMember(workspaceId);
+
+    const existingEmails = members.map((m) => m.email);
 
     useEffect(() => {
         document.title = "Dashboard | Workspace Management";
     }, []);
+
     return (
         <>
-            <h2 className="intro-y text-lg font-medium pt-24">Workspace Management</h2>
-
+            <h2 className="intro-y text-lg font-medium pt-24"> Workspace  {workspaceName ? `${workspaceName}` : ""}</h2>
             <div className="grid grid-cols-12 gap-6 mt-5">
                 <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
                     <button
                         onClick={openAddModal}
                         className="btn btn-primary shadow-lg mr-2">
-                        <Plus className='pr-1.5' /> New Workspace
+                        <Plus className='pr-1.5' /> New Member
                     </button>
                     <div className="hidden md:block mx-auto text-slate-500" />
 
@@ -94,7 +107,7 @@ export default function WorkspaceList() {
                         <thead>
                             <tr>
                                 <th className="whitespace-nowrap">NAME</th>
-                                <th className=" whitespace-nowrap">OWNER</th>
+                                <th className="whitespace-nowrap">ROLE</th>
                                 <th className="text-center whitespace-nowrap">ACTIONS</th>
                             </tr>
                         </thead>
@@ -108,52 +121,53 @@ export default function WorkspaceList() {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : workSpaces.length > 0 ? (
-                                [...workSpaces]
-                                    .filter(
-                                        (workspace) =>
-                                            workspace.name.toLowerCase().includes(searchTerm.toLowerCase())
-                                    )
-                                    .sort((a, b) => {
-                                        const da = a.created_at ? new Date(a.created_at).getTime() : 0;
-                                        const db = b.created_at ? new Date(b.created_at).getTime() : 0;
-                                        return da - db;
+                            ) : members.length > 0 ? (
+                                [...members]
+                                    .filter((m) => {
+                                        const term = searchTerm.toLowerCase();
+                                        return (
+                                            m.name.toLowerCase().includes(term) ||
+                                            m.email.toLowerCase().includes(term) ||
+                                            m.workspace_role.toLowerCase().includes(term)
+                                        );
                                     })
-                                    .map((workspace) => (
-                                        <motion.tr key={workspace.id} whileHover={{ scale: 1.02 }}>
+                                    .map((m) => (
+                                        <motion.tr key={m.user_id} whileHover={{ scale: 1.02 }}>
                                             <td>
-                                                <span className="font-medium whitespace-nowrap">
-                                                    {workspace.name}
-                                                </span>
+                                                <span className="font-medium whitespace-nowrap">{m.name}</span>
+                                                <div className="text-slate-500 text-xs whitespace-nowrap mt-0.5">{m.email}</div>
                                             </td>
-                                            <td>
-                                                <span className="font-medium whitespace-nowrap ">
-                                                    {workspace.owner?.name}
-                                                </span>
+                                            <td className="whitespace-nowrap">
+                                                <div className="min-w-45">
+                                                    <Select<RoleOption, false>
+                                                        classNamePrefix="react-select"
+                                                        isSearchable={false}
+                                                        options={ROLE_OPTIONS}
+                                                        value={ROLE_OPTIONS.find((o) => o.value === m.workspace_role) || ROLE_OPTIONS[0]}
+                                                        onChange={(opt: SingleValue<RoleOption>) => {
+                                                            if (!opt) return;
+                                                            if (opt.value === m.workspace_role) return;
+                                                            // proteksi: jangan ubah owner via select (opsional)
+                                                            if (m.workspace_role === "owner") return;
+
+                                                            updateRole(m.user_id, opt.value);
+                                                        }}
+                                                        isDisabled={m.workspace_role === "owner"} // owner tidak bisa diubah
+                                                    />
+                                                </div>
                                             </td>
-                                            <td className="table-report__action w-80">
+                                            <td className="table-report__action w-56">
                                                 <div className="flex justify-center items-center">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openRoute(workspace)}
-                                                        className="flex items-center mr-3 text-primary"
-                                                    >
-                                                        <Settings2 className="w-4 h-4 mr-1 text" /> Manage Members
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openEditModal(workspace)}
-                                                        className="flex items-center mr-3 text-warning"
-                                                    >
-                                                        <CheckSquare className="w-4 h-4 mr-1" /> Edit
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openModalDelete(workspace)}
-                                                        className="flex items-center mr-3 text-red-500"
-                                                    >
-                                                        <Trash2 className="w-4 h-4 mr-1" /> Hapus
-                                                    </button>
+                                                    {m.workspace_role !== "owner" && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openModalDelete(m)}
+                                                            className="flex items-center mr-3 text-red-500"
+                                                            title="Remove member"
+                                                        >
+                                                            <Trash2 className="w-4 h-4 mr-1" /> Hapus
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </motion.tr>
@@ -243,11 +257,13 @@ export default function WorkspaceList() {
                 title={modalData.title}
                 onSave={handleSave}
             >
-                <InputWorkspace
+                <InputWorkspaceMember
+                    mode={modalData.mode}
                     formData={formData}
                     setFormData={setFormData}
                     errors={errors}
                     setErrors={setErrors}
+                    existingMembers={existingEmails}
                 />
             </Modal>
 

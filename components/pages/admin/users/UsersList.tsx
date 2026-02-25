@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { motion } from "framer-motion";
-import { useParams } from "next/navigation";
-import Select, { SingleValue } from "react-select";
 import {
     CheckSquare,
     ChevronLeft,
@@ -16,34 +13,16 @@ import {
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Modaldelete from "@/components/ui/Modaldelete";
-import useWorkspacesMember from "@/components/hooks/workspaces/useWorkspacesMember";
-import InputWorkspaceMember from "./InputWorkspaceMember";
+import useUser from "@/components/hooks/admin/users/useUser";
+import InputUsers from "./InputUsers";
+import { motion } from "framer-motion";
 
-type Modaldelete = {
-    isOpenDelete: boolean;
-    onClose: () => void;
-    onDelete: () => void | Promise<void>;
-    title?: string;
-    children?: React.ReactNode; // ✅ tambahkan ini
-};
 
-type RoleOption = { value: "owner" | "editor" | "reviewer" | "viewer"; label: string };
-
-const ROLE_OPTIONS: RoleOption[] = [
-    { value: "owner", label: "Owner" },
-    { value: "editor", label: "Editor" },
-    { value: "reviewer", label: "Reviewer" },
-    { value: "viewer", label: "Viewer" },
-];
-
-export default function WorkspaceMember() {
-    const params = useParams<{ id: string }>();
-    const workspaceId = params.id;
-
+function UsersList(): React.ReactElement {
     const {
         isOpen,
         isOpenDelete,
-        members,
+        users,
         loading,
         searchTerm,
         setSearchTerm,
@@ -57,29 +36,27 @@ export default function WorkspaceMember() {
         setIsOpen,
         setIsOpenDelete,
         handlePageChange,
-        handleSave,
-        openAddModal,
+        handleSaveUser,
+        openAddUserModal,
+        openEditUserModal,
         openModalDelete,
-        handleDelete,
-        workspaceName,
-        updateRole
-    } = useWorkspacesMember(workspaceId);
-
-    const existingEmails = members.map((m) => m.email);
+        handleDeleteUser,
+    } = useUser();
 
     useEffect(() => {
-        document.title = "Dashboard | Workspace Management";
+        document.title = "Dashboard | Users Management";
     }, []);
 
     return (
         <>
-            <h2 className="intro-y text-lg font-medium pt-24"> Workspace  {workspaceName ? `${workspaceName}` : ""}</h2>
+            <h2 className="intro-y text-lg font-medium pt-24">Users Management</h2>
+
             <div className="grid grid-cols-12 gap-6 mt-5">
                 <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
                     <button
-                        onClick={openAddModal}
+                        onClick={openAddUserModal}
                         className="btn btn-primary shadow-lg mr-2">
-                        <Plus className='pr-1.5' /> New Member
+                        <Plus className='pr-1.5' /> User
                     </button>
                     <div className="hidden md:block mx-auto text-slate-500" />
 
@@ -107,7 +84,8 @@ export default function WorkspaceMember() {
                         <thead>
                             <tr>
                                 <th className="whitespace-nowrap">NAME</th>
-                                <th className="whitespace-nowrap">ROLE</th>
+                                <th className="whitespace-nowrap">EMAIL</th>
+                                <th className="whitespace-nowrap">LEVEL</th>
                                 <th className="text-center whitespace-nowrap">ACTIONS</th>
                             </tr>
                         </thead>
@@ -121,53 +99,50 @@ export default function WorkspaceMember() {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : members.length > 0 ? (
-                                [...members]
-                                    .filter((m) => {
-                                        const term = searchTerm.toLowerCase();
-                                        return (
-                                            m.name.toLowerCase().includes(term) ||
-                                            m.email.toLowerCase().includes(term) ||
-                                            m.workspace_role.toLowerCase().includes(term)
-                                        );
+                            ) : users.length > 0 ? (
+                                [...users]
+                                    .filter(
+                                        (u) =>
+                                            u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                            u.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                    )
+                                    .sort((a, b) => {
+                                        const da = a.created_at ? new Date(a.created_at).getTime() : 0;
+                                        const db = b.created_at ? new Date(b.created_at).getTime() : 0;
+                                        return da - db;
                                     })
-                                    .map((m) => (
-                                        <motion.tr key={m.user_id} whileHover={{ scale: 1.02 }}>
+                                    .map((u) => (
+                                        <motion.tr key={u.id} whileHover={{ scale: 1.02 }}>
                                             <td>
-                                                <span className="font-medium whitespace-nowrap">{m.name}</span>
-                                                <div className="text-slate-500 text-xs whitespace-nowrap mt-0.5">{m.email}</div>
+                                                <span className="font-medium whitespace-nowrap">
+                                                    {u.name}
+                                                </span>
                                             </td>
-                                            <td className="whitespace-nowrap">
-                                                <div className="min-w-45">
-                                                    <Select<RoleOption, false>
-                                                        classNamePrefix="react-select"
-                                                        isSearchable={false}
-                                                        options={ROLE_OPTIONS}
-                                                        value={ROLE_OPTIONS.find((o) => o.value === m.workspace_role) || ROLE_OPTIONS[0]}
-                                                        onChange={(opt: SingleValue<RoleOption>) => {
-                                                            if (!opt) return;
-                                                            if (opt.value === m.workspace_role) return;
-                                                            // proteksi: jangan ubah owner via select (opsional)
-                                                            if (m.workspace_role === "owner") return;
 
-                                                            updateRole(m.user_id, opt.value);
-                                                        }}
-                                                        isDisabled={m.workspace_role === "owner"} // owner tidak bisa diubah
-                                                    />
-                                                </div>
+                                            <td>
+                                                <div className="flex items-center">{u.email}</div>
                                             </td>
+
+                                            <td>
+                                                <div className="flex items-center">{u.role}</div>
+                                            </td>
+
                                             <td className="table-report__action w-56">
                                                 <div className="flex justify-center items-center">
-                                                    {m.workspace_role !== "owner" && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => openModalDelete(m)}
-                                                            className="flex items-center mr-3 text-red-500"
-                                                            title="Remove member"
-                                                        >
-                                                            <Trash2 className="w-4 h-4 mr-1" /> Hapus
-                                                        </button>
-                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openEditUserModal(u)}
+                                                        className="flex items-center mr-3 "
+                                                    >
+                                                        <CheckSquare className="w-4 h-4 mr-1" /> Edit
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openModalDelete(u)}
+                                                        className="flex items-center mr-3 text-red-500"
+                                                    >
+                                                        <Trash2 className="w-4 h-4 mr-1" /> Hapus
+                                                    </button>
                                                 </div>
                                             </td>
                                         </motion.tr>
@@ -248,32 +223,33 @@ export default function WorkspaceMember() {
                         </ul>
                     </nav>
                 </div>
-            </div>
+            </div >
 
             {/* 🔹 Modal Add/Edit */}
             <Modal
                 isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
+                onClose={() => setIsOpen(false)
+                }
                 title={modalData.title}
-                onSave={handleSave}
+                onSave={handleSaveUser}
             >
-                <InputWorkspaceMember
-                    mode={modalData.mode}
+                <InputUsers
                     formData={formData}
                     setFormData={setFormData}
                     errors={errors}
                     setErrors={setErrors}
-                    existingMembers={existingEmails}
                 />
-            </Modal>
+            </Modal >
 
             <Modaldelete
                 isOpenDelete={isOpenDelete}
                 onClose={() => setIsOpenDelete(false)}
-                onDelete={handleDelete}
+                onDelete={handleDeleteUser}
                 title={modalDataDelete.title}
             >
             </Modaldelete>
         </>
-    )
+    );
 }
+
+export default UsersList;

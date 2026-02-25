@@ -1,5 +1,5 @@
 
-import UsersList from '@/components/pages/users/UsersList'
+import UsersList from '@/components/pages/admin/users/UsersList'
 import React from 'react'
 
 function UserListPage() {

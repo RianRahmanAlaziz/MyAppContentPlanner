@@ -207,7 +207,7 @@ export default function useWorkspaces() {
     };
 
     const openRoute = (workspace: WorkSpacesItem) => {
-        router.push(`/dashboard/workspace/${workspace.id}/members`);
+        router.push(`/dashboard/admin/workspace/${workspace.slug}/members`);
     };
 
     return {

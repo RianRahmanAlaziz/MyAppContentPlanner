@@ -5,6 +5,7 @@ import Sidelink from "@/components/ui/sidelink";
 import {
     Briefcase,
     ChartNoAxesGantt,
+    FileSpreadsheet,
     FolderKanban,
     LayoutDashboard,
     SquareDashedKanbanIcon,
@@ -23,23 +24,28 @@ function Sidebar(): React.ReactElement {
 
                 <Sidelink
                     title="Users Management"
-                    href="/dashboard/users-management"
+                    href="/dashboard/admin/users-management"
                     icon={<SquareUser />}
                 />
                 {/* side admin */}
                 <Sidelink
                     title="Workspace Management"
-                    href="/dashboard/workspace"
+                    href="/dashboard/admin/workspace"
                     match="prefix"
                     icon={<Briefcase />}
                 />
                 <Sidelink
                     title="Content Management"
-                    href="/dashboard/contents"
+                    href="/dashboard/admin/contents"
                     icon={<FolderKanban />}
                 />
-                {/* side user */}
                 <Sidelink
+                    title="Audit Logs"
+                    href="/dashboard/admin/audit-logs"
+                    icon={<FileSpreadsheet />}
+                />
+                {/* side user */}
+                {/* <Sidelink
                     title="Workspace Management"
                     icon={<Briefcase />}
                 >
@@ -53,7 +59,7 @@ function Sidebar(): React.ReactElement {
                         href="/dashboard/workspace/board"
                         icon={<SquareDashedKanbanIcon />}
                     />
-                </Sidelink>
+                </Sidelink> */}
             </ul>
         </nav>
     );

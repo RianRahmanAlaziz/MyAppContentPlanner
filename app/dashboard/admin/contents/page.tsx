@@ -1,4 +1,4 @@
-import ContentsList from '@/components/pages/contents/ContentsList'
+import ContentsList from '@/components/pages/admin/contents/ContentsList'
 
 
 export default function ContentPage() {

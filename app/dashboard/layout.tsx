@@ -2,7 +2,7 @@
 
 import React from "react";
 import "@/app/app.css"
-import { useRouter } from "next/navigation";
+
 import Topbar from "@/components/layouts/Topbar";
 import Sidebar from "@/components/layouts/Sidebar";
 import Switcher from "@/components/layouts/Switcher";

@@ -22,9 +22,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { MoreVertical, Plus, Clock } from "lucide-react";
 import type { Content, ContentStatus } from "@/components/pages/workspace/types/content";
-import type { BoardColumn } from "@/components/hooks/workspaces/useWorkspaceBoard";
+import type { BoardColumn } from "@/components/hooks/admin/workspaces/useWorkspaceBoard";
 import InputWorkspaceBoard from "./InputWorkspaceBoard";
-import type { CreateContentPayload } from "@/components/hooks/workspaces/useWorkspaceBoard";
+import type { CreateContentPayload } from "@/components/hooks/admin/workspaces/useWorkspaceBoard";
 
 function findColumnIdByItemId(columns: BoardColumn[], itemId: number): ContentStatus | null {
     for (const col of columns) {
