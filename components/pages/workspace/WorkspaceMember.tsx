@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Modaldelete from "@/components/ui/Modaldelete";
-import useWorkspacesMember from "@/components/hooks/admin/workspaces/useWorkspacesMember";
+import useWorkspacesMember from "@/components/hooks/admin/workspaces/useAdminWorkspacesMember";
 import InputWorkspaceMember from "./InputWorkspaceMember";
 
 

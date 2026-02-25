@@ -29,7 +29,7 @@ type Option = {
     label: string;
 };
 
-export default function InputWorkspace({
+export default function AdminInputWorkspace({
     formData,
     setFormData,
     errors,

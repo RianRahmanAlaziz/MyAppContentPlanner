@@ -16,8 +16,8 @@ import {
 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Modaldelete from "@/components/ui/Modaldelete";
-import useWorkspacesMember from "@/components/hooks/admin/workspaces/useWorkspacesMember";
-import InputWorkspaceMember from "./InputWorkspaceMember";
+import useAdminWorkspacesMember from "@/components/hooks/admin/workspaces/useAdminWorkspacesMember";
+import AdminInputWorkspaceMember from "./AdminInputWorkspaceMember";
 
 type Modaldelete = {
     isOpenDelete: boolean;
@@ -36,7 +36,7 @@ const ROLE_OPTIONS: RoleOption[] = [
     { value: "viewer", label: "Viewer" },
 ];
 
-export default function WorkspaceMember() {
+export default function AdminWorkspaceMember() {
     const params = useParams<{ slug: string }>();
     const workspaceId = params.slug;
 
@@ -63,7 +63,7 @@ export default function WorkspaceMember() {
         handleDelete,
         workspaceName,
         updateRole
-    } = useWorkspacesMember(workspaceId);
+    } = useAdminWorkspacesMember(workspaceId);
 
     const existingEmails = members.map((m) => m.email);
 
@@ -257,7 +257,7 @@ export default function WorkspaceMember() {
                 title={modalData.title}
                 onSave={handleSave}
             >
-                <InputWorkspaceMember
+                <AdminInputWorkspaceMember
                     mode={modalData.mode}
                     formData={formData}
                     setFormData={setFormData}

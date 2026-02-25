@@ -25,7 +25,7 @@ type AdminWorkspacesResponse =
 
 type Option<T extends string | number> = { value: T; label: string };
 
-export default function useWorkspaceOptions() {
+export default function useAdminWorkspaceOptions() {
     const [loading, setLoading] = useState(false);
     const [items, setItems] = useState<WorkspaceOptionItem[]>([]);
 

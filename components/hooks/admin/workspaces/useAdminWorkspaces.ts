@@ -58,7 +58,7 @@ type WorkSpacesPaginatedResponse = {
     };
 };
 
-export default function useWorkspaces() {
+export default function useAdminWorkspaces() {
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);

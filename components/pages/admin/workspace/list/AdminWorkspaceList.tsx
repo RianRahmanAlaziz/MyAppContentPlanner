@@ -15,8 +15,8 @@ import {
 import Modal from "@/components/ui/Modal";
 import { motion } from "framer-motion";
 import Modaldelete from "@/components/ui/Modaldelete";
-import useWorkspaces from "@/components/hooks/admin/workspaces/useWorkspaces";
-import InputWorkspace from "./InputWorkspace";
+import useAdminWorkspaces from "@/components/hooks/admin/workspaces/useAdminWorkspaces";
+import AdminInputWorkspace from "./AdminInputWorkspace";
 
 type Modaldelete = {
     isOpenDelete: boolean;
@@ -26,9 +26,7 @@ type Modaldelete = {
     children?: React.ReactNode; // ✅ tambahkan ini
 };
 
-
-
-export default function WorkspaceList() {
+export default function AdminWorkspaceList() {
     const {
         isOpen,
         isOpenDelete,
@@ -52,7 +50,7 @@ export default function WorkspaceList() {
         openModalDelete,
         handleDelete,
         openRoute,
-    } = useWorkspaces();
+    } = useAdminWorkspaces();
 
     useEffect(() => {
         document.title = "Dashboard | Workspace Management";
@@ -243,7 +241,7 @@ export default function WorkspaceList() {
                 title={modalData.title}
                 onSave={handleSave}
             >
-                <InputWorkspace
+                <AdminInputWorkspace
                     formData={formData}
                     setFormData={setFormData}
                     errors={errors}

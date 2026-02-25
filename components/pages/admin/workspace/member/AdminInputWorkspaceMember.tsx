@@ -37,7 +37,7 @@ const options: Option[] = [
 ];
 
 
-export default function InputWorkspaceMember({ mode, formData,
+export default function AdminInputWorkspaceMember({ mode, formData,
     setFormData,
     errors,
     setErrors,

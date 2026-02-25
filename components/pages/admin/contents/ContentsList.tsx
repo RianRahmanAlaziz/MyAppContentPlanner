@@ -18,7 +18,7 @@ import useContents, {
     Platform,
     Priority,
 } from "@/components/hooks/admin/contents/useContents";
-import useWorkspaceOptions from "@/components/hooks/admin/workspaces/useWorkspaceOptions";
+import useWorkspaceOptions from "@/components/hooks/admin/workspaces/useAdminWorkspaceOptions";
 import useUserOptions from "@/components/hooks/admin/users/useUserOptions";
 
 // ---------- react-select option type ----------

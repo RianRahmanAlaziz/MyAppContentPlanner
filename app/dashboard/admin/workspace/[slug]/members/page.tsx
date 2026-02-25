@@ -1,8 +1,8 @@
-import WorkspaceMember from "@/components/pages/admin/workspace/member/WorkspaceMember";
+import AdminWorkspaceMember from "@/components/pages/admin/workspace/member/AdminWorkspaceMember";
 
 
-export default function WorkspacePageMember() {
+export default function AdminWorkspacePageMember() {
     return (
-        <WorkspaceMember />
+        <AdminWorkspaceMember />
     )
 }

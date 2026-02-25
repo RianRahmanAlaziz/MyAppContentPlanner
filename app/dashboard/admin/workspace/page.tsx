@@ -1,9 +1,9 @@
 
-import WorkspaceList from '@/components/pages/admin/workspace/list/WorkspaceList'
+import AdminWorkspaceList from '@/components/pages/admin/workspace/list/AdminWorkspaceList'
 import React from 'react'
 
-export default function WorkspacePageList() {
+export default function AdminWorkspacePageList() {
     return (
-        <WorkspaceList />
+        <AdminWorkspaceList />
     )
 }

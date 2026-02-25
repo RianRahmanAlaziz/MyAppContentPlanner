@@ -58,7 +58,7 @@ type IndexResponse = {
     };
 };
 
-export default function useWorkspacesMember(workspaceId: string) {
+export default function useAdminWorkspacesMember(workspaceId: string) {
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDelete, setIsOpenDelete] = useState(false);
     const [workspaceName, setWorkspaceName] = useState("");
