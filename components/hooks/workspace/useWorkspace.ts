@@ -10,6 +10,7 @@ export type WorkSpaceItem = {
     id: number | string;
     name: string;
     slug: string;
+    my_role?: string;
     created_at?: string;
 };
 

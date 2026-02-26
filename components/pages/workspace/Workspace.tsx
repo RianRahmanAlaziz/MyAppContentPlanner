@@ -115,63 +115,77 @@ export default function Workspace() {
                                     .filter((w) =>
                                         w.name.toLowerCase().includes(searchTerm.toLowerCase())
                                     )
-                                    .map((w) => (
-                                        <tr key={w.id} className="intro-x">
-                                            {/* NAME */}
-                                            <td>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center">
-                                                        <span className="font-medium text-slate-700">
-                                                            {w.name?.slice(0, 1)?.toUpperCase()}
-                                                        </span>
+                                    .map((w) => {
+                                        const isOwner = w.my_role === "owner"; // <- role dari workspace_members
+
+                                        return (
+                                            <tr key={w.id} className="intro-x">
+                                                {/* NAME */}
+                                                <td>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center">
+                                                            <span className="font-medium text-slate-700">
+                                                                {w.name?.slice(0, 1)?.toUpperCase()}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="min-w-0">
+                                                            <div className="font-medium truncate">{w.name}</div>
+                                                        </div>
                                                     </div>
+                                                </td>
 
-                                                    <div className="min-w-0">
-                                                        <div className="font-medium truncate">{w.name}</div>
+                                                {/* ACTIONS */}
+                                                <td className="text-center">
+                                                    <div className="flex justify-center items-center gap-2">
+                                                        {isOwner ? (
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openRoute(w)}
+                                                                    className="btn btn-outline-primary btn-sm"
+                                                                    title="Manage"
+                                                                >
+                                                                    <Settings2 className="w-4 h-4 mr-1" />
+                                                                    Manage
+                                                                </button>
+
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openDetailModal(w)}
+                                                                    className="btn btn-outline-primary btn-sm"
+                                                                    title="Detail"
+                                                                >
+                                                                    <Eye className="w-4 h-4 mr-1" />
+                                                                    Detail
+                                                                </button>
+
+                                                                <RowActionsDropdown
+                                                                    onDetail={() => openDetailModal(w)}
+                                                                    onEdit={() => openEditModal(w)}
+                                                                    onDelete={() => openModalDelete(w)}
+                                                                />
+                                                            </>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => openDetailModal(w)}
+                                                                className="btn btn-outline-primary btn-sm"
+                                                                title="Detail"
+                                                            >
+                                                                <Eye className="w-4 h-4 mr-1" />
+                                                                Detail
+                                                            </button>
+                                                        )}
                                                     </div>
-                                                </div>
-                                            </td>
-
-                                            {/* ACTIONS */}
-                                            <td className="text-center">
-                                                <div className="flex justify-center items-center gap-2">
-                                                    {/* Primary action */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openRoute(w)}
-                                                        className="btn btn-outline-primary btn-sm"
-                                                        title="Manage"
-                                                    >
-                                                        <Settings2 className="w-4 h-4 mr-1" />
-                                                        Manage
-                                                    </button>
-
-                                                    {/* Secondary action (detail) */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openDetailModal(w)}
-                                                        className="btn btn-outline-secondary btn-sm"
-                                                        title="Detail"
-                                                    >
-                                                        <Eye className="w-4 h-4 mr-1" />
-                                                        Detail
-                                                    </button>
-
-                                                    <RowActionsDropdown
-                                                        onDetail={() => openDetailModal(w)}
-                                                        onEdit={() => openEditModal(w)}
-                                                        onDelete={() => openModalDelete(w)}
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
                             ) : (
                                 <tr>
                                     <td colSpan={2} className="py-10">
-                                        <div className="text-center text-slate-500">
-                                            Tidak ada data
-                                        </div>
+                                        <div className="text-center text-slate-500">Tidak ada data</div>
                                     </td>
                                 </tr>
                             )}

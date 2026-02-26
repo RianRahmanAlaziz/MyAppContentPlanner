@@ -230,3 +230,332 @@
     background-color: rgb(var(--color-darkmode-800) / 1);
     border-color: rgb(var(--color-slate-700) / 0.6);
 }
+
+/* Base */
+.rad {
+    position: relative;
+    display: inline-flex;
+}
+
+/* Trigger button */
+.rad__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 10px;
+    border-radius: 10px;
+
+    border: 1px solid #334155;
+    /* slate-200 */
+    background: #ffffff;
+    color: #334155;
+    /* slate-700 */
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+
+    transition: background 150ms ease, box-shadow 150ms ease, transform 80ms ease,
+        border-color 150ms ease, color 150ms ease;
+}
+
+.rad__trigger:hover {
+    background: #f8fafc;
+    /* slate-50 */
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+}
+
+.rad__trigger:active {
+    transform: scale(0.98);
+}
+
+.rad__trigger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.35), 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.rad__trigger.is-open {
+    border-color: #cbd5e1;
+    /* slate-300 */
+}
+
+/* Menu wrapper */
+.rad__menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 12px;
+    /* turun sedikit */
+    width: 224px;
+    /* w-56 */
+
+    opacity: 0;
+    transform: translateY(0) scale(0.96);
+    pointer-events: none;
+    transform-origin: top right;
+    transition: opacity 150ms ease, transform 150ms ease;
+    z-index: 9999;
+}
+
+.rad__menu.is-open {
+    opacity: 1;
+    transform: translateY(6px) scale(1);
+    pointer-events: auto;
+}
+
+.rad__panel {
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    /* slate-200 */
+    background: #ffffff;
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.18);
+}
+
+/* Header */
+.rad__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    /* slate-500 */
+}
+
+.rad__divider {
+    height: 1px;
+    background: #f1f5f9;
+    /* slate-100 */
+}
+
+/* Items */
+.rad__item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+
+    transition: background 140ms ease, transform 140ms ease, color 140ms ease;
+}
+
+.rad__item:hover {
+    transform: translateX(2px);
+}
+
+.rad__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(226, 232, 240, 1);
+    background: #f8fafc;
+    /* slate-50 */
+    transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.rad__label {
+    flex: 1;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f172a;
+    /* slate-900 */
+    transition: color 140ms ease;
+}
+
+.rad__hint {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    /* slate-400 */
+    transition: color 140ms ease;
+}
+
+/* Detail (blue) */
+.rad__item--detail {
+    color: #2563eb;
+    /* blue-600 */
+}
+
+.rad__item--detail:hover {
+    background: #eff6ff;
+    /* blue-50 */
+}
+
+.rad__item--detail .rad__icon {
+    background: #eff6ff;
+    border-color: #dbeafe;
+    /* blue-100 */
+    color: #2563eb;
+}
+
+.rad__item--detail:hover .rad__label,
+.rad__item--detail:hover .rad__hint {
+    color: #1d4ed8;
+    /* blue-700 */
+}
+
+/* Edit (amber/yellow) */
+.rad__item--edit {
+    color: #d97706;
+    /* amber-600 */
+}
+
+.rad__item--edit:hover {
+    background: #fffbeb;
+    /* amber-50 */
+}
+
+.rad__item--edit .rad__icon {
+    background: #fffbeb;
+    border-color: #fef3c7;
+    /* amber-100 */
+    color: #d97706;
+}
+
+.rad__item--edit:hover .rad__label,
+.rad__item--edit:hover .rad__hint {
+    color: #b45309;
+    /* amber-700 */
+}
+
+/* Delete (red) */
+.rad__item--delete {
+    color: #dc2626;
+    /* red-600 */
+}
+
+.rad__item--delete:hover {
+    background: rgba(254, 242, 242, 0.85);
+    /* red-50 */
+}
+
+.rad__item--delete .rad__icon {
+    background: #fef2f2;
+    border-color: #fee2e2;
+    /* red-100 */
+    color: #dc2626;
+}
+
+.rad__item--delete:hover .rad__label,
+.rad__item--delete:hover .rad__hint {
+    color: #b91c1c;
+    /* red-700 */
+}
+
+/* ===========================
+   DARK MODE (Midone-friendly)
+   Works if Midone uses:
+   - html.dark
+   - body.dark
+   - .dark-mode on a wrapper
+   =========================== */
+
+html.dark .rad__trigger,
+body.dark .rad__trigger,
+.dark-mode .rad__trigger {
+    background: #26303f;
+    /* slate-900 */
+    border-color: #e2e8f0;
+    /* slate-700 */
+    color: #e2e8f0;
+    /* slate-200 */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+html.dark .rad__trigger:hover,
+body.dark .rad__trigger:hover,
+.dark-mode .rad__trigger:hover {
+    background: #1f2937;
+    /* slate-800-ish */
+}
+
+html.dark .rad__panel,
+body.dark .rad__panel,
+.dark-mode .rad__panel {
+    background: #0f172a;
+    border-color: #334155;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+html.dark .rad__header,
+body.dark .rad__header,
+.dark-mode .rad__header {
+    color: #94a3b8;
+    /* slate-400 */
+}
+
+html.dark .rad__divider,
+body.dark .rad__divider,
+.dark-mode .rad__divider {
+    background: #1f2937;
+    /* slate-800 */
+}
+
+html.dark .rad__label,
+body.dark .rad__label,
+.dark-mode .rad__label {
+    color: #e2e8f0;
+    /* slate-200 */
+}
+
+html.dark .rad__hint,
+body.dark .rad__hint,
+.dark-mode .rad__hint {
+    color: #64748b;
+    /* slate-500 */
+}
+
+html.dark .rad__icon,
+body.dark .rad__icon,
+.dark-mode .rad__icon {
+    background: rgba(148, 163, 184, 0.08);
+    border-color: rgba(148, 163, 184, 0.18);
+}
+
+/* Dark hover backgrounds per action */
+html.dark .rad__item--detail:hover,
+body.dark .rad__item--detail:hover,
+.dark-mode .rad__item--detail:hover {
+    background: rgba(37, 99, 235, 0.12);
+}
+
+html.dark .rad__item--edit:hover,
+body.dark .rad__item--edit:hover,
+.dark-mode .rad__item--edit:hover {
+    background: rgba(217, 119, 6, 0.12);
+}
+
+html.dark .rad__item--delete:hover,
+body.dark .rad__item--delete:hover,
+.dark-mode .rad__item--delete:hover {
+    background: rgba(220, 38, 38, 0.12);
+}
+
+.rad__portal {
+    animation: radPop 140ms ease-out;
+}
+
+@keyframes radPop {
+    from {
+        opacity: 0;
+        transform: translateY(0) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(6px) scale(1);
+    }
+}

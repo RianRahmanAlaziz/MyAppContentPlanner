@@ -18545,14 +18545,7 @@ html body {
   font-weight: 500;
 }
 
-.dark .source-preview code:before {
-  --tw-bg-opacity: 1;
-  background-color: rgb(var(--color-slate-300) / var(--tw-bg-opacity));
-}
 
-.source-preview code.javascript:before {
-  content: "JS";
-}
 
 @media (max-width: calc(1024px - 1px)) {
   .full-calendar .fc-toolbar {
