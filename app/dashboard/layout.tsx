@@ -7,8 +7,8 @@ import Topbar from "@/components/layouts/Topbar";
 import Sidebar from "@/components/layouts/Sidebar";
 import Switcher from "@/components/layouts/Switcher";
 import Menumobile from "@/components/layouts/Menumobile";
-import RequireAdmin from "@/components/guards/RequireAdmin";
 import axiosInstance from "@/lib/axiosInstance";
+import RequireAuth from "@/components/guards/RequireAuth";
 
 type DashboardLayoutProps = {
     children: React.ReactNode;
@@ -34,7 +34,7 @@ export default function DashboardLayout({
 
     return (
         <>
-            <RequireAdmin>
+            <RequireAuth>
                 <div className="min-h-screen py-5 md:py-5 md:pr-5">
                     <Menumobile />
                     <Topbar handleLogout={handleLogout} />
@@ -46,7 +46,7 @@ export default function DashboardLayout({
                 </div>
 
                 <div id="modal-root" />
-            </RequireAdmin>
+            </RequireAuth>
 
         </>
     );

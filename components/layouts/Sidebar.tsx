@@ -14,8 +14,10 @@ import {
     SquareUser,
 
 } from "lucide-react";
+import { isAdmin } from "@/lib/auth";
 
 function Sidebar(): React.ReactElement {
+    const admin = isAdmin();
     return (
         <nav className="side-nav side-nav--simple">
             <ul>
@@ -23,28 +25,34 @@ function Sidebar(): React.ReactElement {
 
                 <li className="side-nav__devider my-6" />
 
-                <Sidelink
-                    title="Users Management"
-                    href="/dashboard/admin/users-management"
-                    icon={<SquareUser />}
-                />
-                {/* side admin */}
-                <Sidelink
-                    title="Workspace Management"
-                    href="/dashboard/admin/workspace"
-                    match="prefix"
-                    icon={<LaptopMinimalCheck />}
-                />
-                <Sidelink
-                    title="Content Management"
-                    href="/dashboard/admin/contents"
-                    icon={<FolderKanban />}
-                />
-                <Sidelink
-                    title="Audit Logs"
-                    href="/dashboard/admin/audit-logs"
-                    icon={<FileSpreadsheet />}
-                />
+                {admin && (
+                    <>
+                        <Sidelink
+                            title="Users Management"
+                            href="/dashboard/admin/users-management"
+                            icon={<SquareUser />}
+                        />
+
+                        <Sidelink
+                            title="Workspace Management"
+                            href="/dashboard/admin/workspace"
+                            match="prefix"
+                            icon={<LaptopMinimalCheck />}
+                        />
+
+                        <Sidelink
+                            title="Content Management"
+                            href="/dashboard/admin/contents"
+                            icon={<FolderKanban />}
+                        />
+
+                        <Sidelink
+                            title="Audit Logs"
+                            href="/dashboard/admin/audit-logs"
+                            icon={<FileSpreadsheet />}
+                        />
+                    </>
+                )}
 
                 {/* side user */}
                 <Sidelink

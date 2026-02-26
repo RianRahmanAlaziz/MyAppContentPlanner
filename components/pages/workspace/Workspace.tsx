@@ -60,18 +60,17 @@ export default function Workspace() {
 
     return (
         <>
-            <div className="intro-y flex items-center justify-between pt-24">
-                <h2 className="text-lg font-medium">Workspace Management</h2>
-
-                <button onClick={openAddModal} className="btn btn-primary shadow-lg">
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Workspace
-                </button>
-            </div>
+            <h2 className="intro-y text-lg font-medium pt-24">Workspace Management</h2>
 
             <div className="grid grid-cols-12 gap-6 mt-5">
                 {/* Toolbar */}
                 <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center gap-3">
+                    <button
+                        onClick={openAddModal}
+                        className="btn btn-primary shadow-lg mr-2">
+                        <Plus className='pr-1.5' /> New Workspace
+                    </button>
+                    <div className="hidden md:block mx-auto text-slate-500" />
                     <div className="w-full sm:w-auto sm:ml-auto">
                         <div className="w-full sm:w-72 relative text-slate-500">
                             <input

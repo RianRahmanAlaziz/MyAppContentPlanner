@@ -25,14 +25,18 @@ export default function LoginPage() {
             const res = await axiosInstance.post("/auth/login", { email, password });
             const { token, user } = res.data;
 
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+
             // simpan token + user
             setToken(token, true);
             setUser(user, true);
 
             toast.success("Berhasil login!");
-
-            if (user.role === "admin") router.push("/dashboard");
-            else router.push("/workspaces");
+            router.push("/dashboard");
+            router.refresh();
         } catch (err: any) {
             const status = err?.response?.status;
             const data = err?.response?.data;

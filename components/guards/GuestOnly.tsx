@@ -1,21 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUser, isAuthenticated } from "@/lib/auth";
+import { isAuthenticated } from "@/lib/auth";
 
 export default function GuestOnly({ children }: { children: React.ReactNode }) {
     const router = useRouter();
+    const [checked, setChecked] = useState(false);
+    const [authed, setAuthed] = useState(false);
 
     useEffect(() => {
-        if (isAuthenticated()) {
-            const user = getUser();
-            if (user?.role === "admin") router.replace("/dashboard");
-            else router.replace("/workspaces");
-        }
+        const ok = isAuthenticated();
+        setAuthed(ok);
+        setChecked(true);
+
+        if (ok) router.replace("/dashboard"); // ✅ admin/user sama-sama ke dashboard
     }, [router]);
 
-    if (isAuthenticated()) return null;
+    if (!checked) return null;
+    if (authed) return null;
 
     return <>{children}</>;
 }
