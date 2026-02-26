@@ -33,7 +33,7 @@ function Sidebar(): React.ReactElement {
                     title="Workspace Management"
                     href="/dashboard/admin/workspace"
                     match="prefix"
-                    icon={<Briefcase />}
+                    icon={<LaptopMinimalCheck />}
                 />
                 <Sidelink
                     title="Content Management"
@@ -45,13 +45,9 @@ function Sidebar(): React.ReactElement {
                     href="/dashboard/admin/audit-logs"
                     icon={<FileSpreadsheet />}
                 />
-                <Sidelink
-                    title="Workspace Management"
-                    href="/dashboard/workspace"
-                    icon={<LaptopMinimalCheck />}
-                />
+
                 {/* side user */}
-                {/* <Sidelink
+                <Sidelink
                     title="Workspace Management"
                     icon={<Briefcase />}
                 >
@@ -65,7 +61,7 @@ function Sidebar(): React.ReactElement {
                         href="/dashboard/workspace/board"
                         icon={<SquareDashedKanbanIcon />}
                     />
-                </Sidelink> */}
+                </Sidelink>
             </ul>
         </nav>
     );

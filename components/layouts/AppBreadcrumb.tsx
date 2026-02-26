@@ -25,18 +25,29 @@ function labelOf(seg: string) {
 export default function AppBreadcrumb() {
     const pathname = usePathname();
 
-    // contoh: /dashboard/workspaces/12/members
     const raw = pathname.split("/").filter(Boolean);
 
-    // buang angka ID (12)
-    const segments = raw.filter((seg) => !isNumericSegment(seg));
+    const segments: string[] = [];
 
-    // bangun crumb href tanpa angka (biar link aman)
-    // NOTE: karena kita buang ID, link "Members" akan jadi /dashboard/workspaces/members
-    // jadi untuk breadcrumb, biasanya cukup klik sampai level yang memang ada routenya (mis. dashboard, workspaces).
+    for (let i = 0; i < raw.length; i++) {
+        const seg = raw[i];
+
+        segments.push(seg);
+
+        // Jika segment adalah "workspace", skip 1 berikutnya (slug)
+        if (seg === "workspace" && raw[i + 1]) {
+            i++; // lewati slug
+        }
+    }
+
     const crumbs = segments.map((seg, idx) => {
         const href = "/" + segments.slice(0, idx + 1).join("/");
-        return { seg, href, label: labelOf(seg), isLast: idx === segments.length - 1 };
+        return {
+            seg,
+            href,
+            label: labelOf(seg),
+            isLast: idx === segments.length - 1,
+        };
     });
 
     return (

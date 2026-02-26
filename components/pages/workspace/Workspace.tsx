@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import {
-    CheckSquare,
     ChevronLeft,
     ChevronsLeft,
     ChevronRight,
@@ -11,12 +10,18 @@ import {
     Trash2,
     Plus,
     Settings2,
+    Eye,
+    MoreVertical,
+    Pencil,
 } from "lucide-react";
+
 import Modal from "@/components/ui/Modal";
-import { motion } from "framer-motion";
 import Modaldelete from "@/components/ui/Modaldelete";
+import DetailModal from "@/components/ui/DetailModal";
 import useWorkspace from "@/components/hooks/workspace/useWorkspace";
 import InputWorkspace from "./InputWorkspace";
+import WorkspaceDetailModal from "./WorkspaceDetailModal";
+import RowActionsDropdown from "@/components/ui/RowActionsDropdown";
 
 export default function Workspace() {
     const {
@@ -41,7 +46,12 @@ export default function Workspace() {
         openEditModal,
         openModalDelete,
         handleDelete,
-        openRoute
+        openRoute,
+        isOpenDetail,
+        setIsOpenDetail,
+        detailLoading,
+        workspaceDetail,
+        openDetailModal,
     } = useWorkspace();
 
     useEffect(() => {
@@ -50,103 +60,118 @@ export default function Workspace() {
 
     return (
         <>
-            <h2 className="intro-y text-lg font-medium pt-24">Workspace Management</h2>
+            <div className="intro-y flex items-center justify-between pt-24">
+                <h2 className="text-lg font-medium">Workspace Management</h2>
+
+                <button onClick={openAddModal} className="btn btn-primary shadow-lg">
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Workspace
+                </button>
+            </div>
 
             <div className="grid grid-cols-12 gap-6 mt-5">
-                <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
-                    <button
-                        onClick={openAddModal}
-                        className="btn btn-primary shadow-lg mr-2">
-                        <Plus className='pr-1.5' /> New Workspace
-                    </button>
-                    <div className="hidden md:block mx-auto text-slate-500" />
-
-                    <div className="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-auto md:ml-0">
-                        <div className="w-56 relative text-slate-500">
+                {/* Toolbar */}
+                <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center gap-3">
+                    <div className="w-full sm:w-auto sm:ml-auto">
+                        <div className="w-full sm:w-72 relative text-slate-500">
                             <input
                                 type="text"
-                                className="form-control w-56 box pr-10"
-                                placeholder="Search..."
+                                className="form-control w-full box pr-10"
+                                placeholder="Search workspace..."
                                 value={searchTerm}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                     setSearchTerm(e.target.value)
                                 }
                             />
-                            <i
-                                className="w-4 h-4 absolute my-auto inset-y-0 mr-3 right-0"
-                                data-lucide="search"
-                            />
+                            <span className="w-4 h-4 absolute my-auto inset-y-0 mr-3 right-0 opacity-70">
+                                {/* icon search bawaan midone biasanya via data-lucide, tapi ini aman */}
+                            </span>
                         </div>
                     </div>
                 </div>
 
+                {/* Table */}
                 <div className="intro-y col-span-12 overflow-auto lg:overflow-visible">
                     <table className="table table-report -mt-2">
                         <thead>
                             <tr>
-                                <th className="whitespace-nowrap">NAME</th>
-                                <th className="text-center whitespace-nowrap">ACTIONS</th>
+                                <th className="whitespace-nowrap">WORKSPACE</th>
+                                <th className="text-center whitespace-nowrap w-[260px]">ACTIONS</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={4} className="py-6">
-                                        <div className="flex justify-center items-center">
-                                            <LoaderCircle className="w-6 h-6 animate-spin text-gray-500" />
+                                    <td colSpan={2} className="py-8">
+                                        <div className="flex justify-center items-center gap-2 text-slate-500">
+                                            <LoaderCircle className="w-5 h-5 animate-spin" />
+                                            <span>Loading...</span>
                                         </div>
                                     </td>
                                 </tr>
                             ) : workspace.length > 0 ? (
                                 [...workspace]
-                                    .filter(
-                                        (workspace) =>
-                                            workspace.name.toLowerCase().includes(searchTerm.toLowerCase())
+                                    .filter((w) =>
+                                        w.name.toLowerCase().includes(searchTerm.toLowerCase())
                                     )
-                                    .sort((a, b) => {
-                                        const da = a.created_at ? new Date(a.created_at).getTime() : 0;
-                                        const db = b.created_at ? new Date(b.created_at).getTime() : 0;
-                                        return da - db;
-                                    })
-                                    .map((workspace) => (
-                                        <motion.tr key={workspace.id} whileHover={{ scale: 1.02 }}>
+                                    .map((w) => (
+                                        <tr key={w.id} className="intro-x">
+                                            {/* NAME */}
                                             <td>
-                                                <span className="font-medium whitespace-nowrap">
-                                                    {workspace.name}
-                                                </span>
-                                            </td>
-                                            <td className="table-report__action w-80">
-                                                <div className="flex justify-center items-center">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openRoute(workspace)}
-                                                        className="flex items-center mr-3 text-primary"
-                                                    >
-                                                        <Settings2 className="w-4 h-4 mr-1 text" /> Manage Members
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openEditModal(workspace)}
-                                                        className="flex items-center mr-3 text-warning"
-                                                    >
-                                                        <CheckSquare className="w-4 h-4 mr-1" /> Edit
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => openModalDelete(workspace)}
-                                                        className="flex items-center mr-3 text-red-500"
-                                                    >
-                                                        <Trash2 className="w-4 h-4 mr-1" /> Hapus
-                                                    </button>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center">
+                                                        <span className="font-medium text-slate-700">
+                                                            {w.name?.slice(0, 1)?.toUpperCase()}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="min-w-0">
+                                                        <div className="font-medium truncate">{w.name}</div>
+                                                    </div>
                                                 </div>
                                             </td>
-                                        </motion.tr>
+
+                                            {/* ACTIONS */}
+                                            <td className="text-center">
+                                                <div className="flex justify-center items-center gap-2">
+                                                    {/* Primary action */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openRoute(w)}
+                                                        className="btn btn-outline-primary btn-sm"
+                                                        title="Manage"
+                                                    >
+                                                        <Settings2 className="w-4 h-4 mr-1" />
+                                                        Manage
+                                                    </button>
+
+                                                    {/* Secondary action (detail) */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openDetailModal(w)}
+                                                        className="btn btn-outline-secondary btn-sm"
+                                                        title="Detail"
+                                                    >
+                                                        <Eye className="w-4 h-4 mr-1" />
+                                                        Detail
+                                                    </button>
+
+                                                    <RowActionsDropdown
+                                                        onDetail={() => openDetailModal(w)}
+                                                        onEdit={() => openEditModal(w)}
+                                                        onDelete={() => openModalDelete(w)}
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
                                     ))
                             ) : (
                                 <tr>
-                                    <td colSpan={4} className="text-center py-4">
-                                        Tidak ada data
+                                    <td colSpan={2} className="py-10">
+                                        <div className="text-center text-slate-500">
+                                            Tidak ada data
+                                        </div>
                                     </td>
                                 </tr>
                             )}
@@ -154,6 +179,7 @@ export default function Workspace() {
                     </table>
                 </div>
 
+                {/* Pagination */}
                 <div className="intro-y col-span-12 flex justify-center items-center mt-5">
                     <nav className="w-auto">
                         <ul className="pagination">
@@ -221,7 +247,7 @@ export default function Workspace() {
                 </div>
             </div>
 
-            {/* 🔹 Modal Add/Edit */}
+            {/* Modal Add/Edit */}
             <Modal
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
@@ -236,13 +262,23 @@ export default function Workspace() {
                 />
             </Modal>
 
+            {/* Modal Detail */}
+            <DetailModal
+                isOpen={isOpenDetail}
+                onClose={() => setIsOpenDetail(false)}
+                title="Workspace details"
+                hideSave
+            >
+                <WorkspaceDetailModal loading={detailLoading} detail={workspaceDetail} />
+            </DetailModal>
+
+            {/* Modal Delete */}
             <Modaldelete
                 isOpenDelete={isOpenDelete}
                 onClose={() => setIsOpenDelete(false)}
                 onDelete={handleDelete}
                 title={modalDataDelete.title}
-            >
-            </Modaldelete>
+            />
         </>
-    )
+    );
 }

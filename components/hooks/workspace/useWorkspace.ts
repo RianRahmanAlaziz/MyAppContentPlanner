@@ -13,6 +13,37 @@ export type WorkSpaceItem = {
     created_at?: string;
 };
 
+export type WorkspaceDetail = {
+    id: number | string;
+    name: string;
+    slug: string;
+    owner_id: number | string;
+    created_at: string;
+    updated_at: string;
+    owner: {
+        id: number | string;
+        name: string;
+        email: string;
+    };
+    members: Array<{
+        id: number | string;
+        workspace_id: number | string;
+        user_id: number | string;
+        role: string;
+        created_at: string;
+        updated_at: string;
+        user: {
+            id: number | string;
+            name: string;
+            email: string;
+        };
+    }>;
+};
+
+type WorkspaceDetailResponse = {
+    data: WorkspaceDetail;
+};
+
 export type FieldErrors = Record<string, string[] | undefined>;
 
 export type FormDataWorkSpace = {
@@ -57,6 +88,11 @@ export default function useWorkspace() {
     const [workspace, setWorkspace] = useState<WorkSpaceItem[]>([]);
     const [errors, setErrors] = useState<FieldErrors>({});
     const [loading, setLoading] = useState<boolean>(true);
+    const [isOpenDetail, setIsOpenDetail] = useState<boolean>(false);
+    const [detailLoading, setDetailLoading] = useState<boolean>(false);
+    const [workspaceDetail, setWorkspaceDetail] = useState<WorkspaceDetail | null>(null);
+    const [detailModalData, setDetailModalData] = useState<{ title: string }>({ title: "" });
+
     const [searchTerm, setSearchTerm] = useState<string>("");
 
     const [formData, setFormData] = useState<FormDataWorkSpace>({
@@ -114,6 +150,26 @@ export default function useWorkspace() {
 
         return () => window.clearTimeout(timeout);
     }, [searchTerm]);
+
+    const openDetailModal = async (ws: WorkSpaceItem): Promise<void> => {
+        try {
+            setIsOpenDetail(true);
+            setDetailLoading(true);
+            setWorkspaceDetail(null);
+            setDetailModalData({ title: `Detail Workspace: ${ws.name}` });
+
+            // ambil detail dari backend
+            // sesuaikan endpoint kamu: bisa /workspace/{id} atau /workspace/{slug}
+            const res = await axiosInstance.get<WorkspaceDetailResponse>(`/workspace/${ws.slug}`);
+            setWorkspaceDetail(res.data.data);
+        } catch (error) {
+            console.error("Gagal mengambil detail workspace:", error);
+            toast.error("Gagal mengambil detail workspace 😞");
+            setIsOpenDetail(false);
+        } finally {
+            setDetailLoading(false);
+        }
+    };
 
     const handlePageChange = (page: number): void => {
         if (page < 1 || page > pagination.last_page) return;
@@ -219,6 +275,12 @@ export default function useWorkspace() {
         openEditModal,
         openModalDelete,
         handleDelete,
-        openRoute
+        openRoute,
+        isOpenDetail,
+        setIsOpenDetail,
+        detailLoading,
+        workspaceDetail,
+        detailModalData,
+        openDetailModal,
     };
 }
