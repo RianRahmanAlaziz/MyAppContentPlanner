@@ -251,8 +251,14 @@ export default function useWorkspace() {
         }
     };
 
-    const openRoute = (workspace: WorkSpaceItem) => {
+    const openRouteMembers = (workspace: WorkSpaceItem) => {
         router.push(`/dashboard/workspace/${workspace.slug}/members`);
+    };
+    const openRouteBoard = (workspace: WorkSpaceItem) => {
+        router.push(`/dashboard/workspace/${workspace.slug}/board`);
+    };
+    const openRouteCalendar = (workspace: WorkSpaceItem) => {
+        router.push(`/dashboard/workspace/${workspace.slug}/calendar`);
     };
     return {
         isOpen,
@@ -276,7 +282,9 @@ export default function useWorkspace() {
         openEditModal,
         openModalDelete,
         handleDelete,
-        openRoute,
+        openRouteMembers,
+        openRouteBoard,
+        openRouteCalendar,
         isOpenDetail,
         setIsOpenDetail,
         detailLoading,

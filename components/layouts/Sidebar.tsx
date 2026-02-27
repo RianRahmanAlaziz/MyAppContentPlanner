@@ -57,19 +57,9 @@ function Sidebar(): React.ReactElement {
                 {/* side user */}
                 <Sidelink
                     title="Workspace Management"
-                    icon={<Briefcase />}
-                >
-                    <Sidelink
-                        title="Workspace List"
-                        href="/dashboard/workspace"
-                        icon={<ChartNoAxesGantt />}
-                    />
-                    <Sidelink
-                        title="Workspace Board"
-                        href="/dashboard/workspace/board"
-                        icon={<SquareDashedKanbanIcon />}
-                    />
-                </Sidelink>
+                    href="/dashboard/workspace"
+                    icon={<LaptopMinimalCheck />}
+                />
             </ul>
         </nav>
     );

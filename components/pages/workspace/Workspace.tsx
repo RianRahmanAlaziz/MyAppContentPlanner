@@ -13,13 +13,17 @@ import {
     Eye,
     MoreVertical,
     Pencil,
+    Users,
+    Calendar,
+    CalendarRange,
+    SquareDashedKanban,
 } from "lucide-react";
-
+import { isAdmin } from "@/lib/auth";
 import Modal from "@/components/ui/Modal";
 import Modaldelete from "@/components/ui/Modaldelete";
 import DetailModal from "@/components/ui/DetailModal";
 import useWorkspace from "@/components/hooks/workspace/useWorkspace";
-import InputWorkspace from "./InputWorkspace";
+import InputWorkspace from "./input/InputWorkspace";
 import WorkspaceDetailModal from "./WorkspaceDetailModal";
 import RowActionsDropdown from "@/components/ui/RowActionsDropdown";
 
@@ -46,18 +50,20 @@ export default function Workspace() {
         openEditModal,
         openModalDelete,
         handleDelete,
-        openRoute,
         isOpenDetail,
         setIsOpenDetail,
         detailLoading,
         workspaceDetail,
         openDetailModal,
+        openRouteMembers,
+        openRouteBoard,
+        openRouteCalendar,
     } = useWorkspace();
 
     useEffect(() => {
         document.title = "Dashboard | Workspace Management";
     }, []);
-
+    const admin = isAdmin();
     return (
         <>
             <h2 className="intro-y text-lg font-medium pt-24">Workspace Management</h2>
@@ -65,11 +71,13 @@ export default function Workspace() {
             <div className="grid grid-cols-12 gap-6 mt-5">
                 {/* Toolbar */}
                 <div className="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center gap-3">
-                    <button
-                        onClick={openAddModal}
-                        className="btn btn-primary shadow-lg mr-2">
-                        <Plus className='pr-1.5' /> New Workspace
-                    </button>
+                    {admin && (
+                        <button
+                            onClick={openAddModal}
+                            className="btn btn-primary shadow-lg mr-2">
+                            <Plus className='pr-1.5' /> New Workspace
+                        </button>
+                    )}
                     <div className="hidden md:block mx-auto text-slate-500" />
                     <div className="w-full sm:w-auto sm:ml-auto">
                         <div className="w-full sm:w-72 relative text-slate-500">
@@ -95,7 +103,7 @@ export default function Workspace() {
                         <thead>
                             <tr>
                                 <th className="whitespace-nowrap">WORKSPACE</th>
-                                <th className="text-center whitespace-nowrap w-[260px]">ACTIONS</th>
+                                <th className="text-center whitespace-nowrap w-100">ACTIONS</th>
                             </tr>
                         </thead>
 
@@ -141,22 +149,30 @@ export default function Workspace() {
                                                             <>
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => openRoute(w)}
-                                                                    className="btn btn-outline-primary btn-sm"
-                                                                    title="Manage"
+                                                                    onClick={() => openRouteBoard(w)}
+                                                                    className="btn btn-outline-indigo btn-sm"
                                                                 >
-                                                                    <Settings2 className="w-4 h-4 mr-1" />
-                                                                    Manage
+                                                                    <SquareDashedKanban className="w-4 h-4 mr-1" />
+                                                                    Board
                                                                 </button>
 
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => openDetailModal(w)}
-                                                                    className="btn btn-outline-primary btn-sm"
-                                                                    title="Detail"
+                                                                    onClick={() => openRouteCalendar(w)}
+                                                                    className="btn btn-outline-purple btn-sm"
                                                                 >
-                                                                    <Eye className="w-4 h-4 mr-1" />
-                                                                    Detail
+                                                                    <CalendarRange className="w-4 h-4 mr-1" />
+                                                                    Calendar
+                                                                </button>
+
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openRouteMembers(w)}
+                                                                    className="btn btn-outline-emerald btn-sm"
+                                                                    title="Manage Members"
+                                                                >
+                                                                    <Users className="w-4 h-4 mr-1" />
+                                                                    Manage Members
                                                                 </button>
 
                                                                 <RowActionsDropdown
@@ -166,15 +182,34 @@ export default function Workspace() {
                                                                 />
                                                             </>
                                                         ) : (
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => openDetailModal(w)}
-                                                                className="btn btn-outline-primary btn-sm"
-                                                                title="Detail"
-                                                            >
-                                                                <Eye className="w-4 h-4 mr-1" />
-                                                                Detail
-                                                            </button>
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openRouteBoard(w)}
+                                                                    className="btn btn-outline-indigo btn-sm"
+                                                                >
+                                                                    <SquareDashedKanban className="w-4 h-4 mr-1" />
+                                                                    Board
+                                                                </button>
+
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openRouteCalendar(w)}
+                                                                    className="btn btn-outline-purple btn-sm"
+                                                                >
+                                                                    <CalendarRange className="w-4 h-4 mr-1" />
+                                                                    Calendar
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => openDetailModal(w)}
+                                                                    className="btn btn-outline-primary btn-sm"
+                                                                    title="Detail"
+                                                                >
+                                                                    <Eye className="w-4 h-4 mr-1" />
+                                                                    Detail
+                                                                </button>
+                                                            </>
                                                         )}
                                                     </div>
                                                 </td>

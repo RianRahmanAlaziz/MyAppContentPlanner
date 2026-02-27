@@ -17,7 +17,7 @@ import {
 import Modal from "@/components/ui/Modal";
 import Modaldelete from "@/components/ui/Modaldelete";
 import useWorkspacesMember from "@/components/hooks/admin/workspaces/useAdminWorkspacesMember";
-import InputWorkspaceMember from "./InputWorkspaceMember";
+import InputWorkspaceMember from "./input/InputWorkspaceMember";
 
 
 type Modaldelete = {
