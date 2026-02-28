@@ -26,6 +26,7 @@ import type { BoardColumn } from "@/components/hooks/workspace/useWorkspaceBoard
 import InputWorkspaceBoard, { defaultContentFormData, type ContentFormData, type ContentFormErrors } from "../input/InputWorkspaceBoard";
 import type { CreateContentPayload } from "@/components/hooks/workspace/useWorkspaceBoard";
 import Modal from "@/components/ui/Modal";
+import DetailModal from "@/components/ui/DetailModal";
 
 /** -------- helpers -------- */
 function combineDateTime(date: string, time: string) {

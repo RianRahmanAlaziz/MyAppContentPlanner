@@ -39,7 +39,7 @@ function Modal({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-9999 pt-32 flex items-start justify-center bg-black/50"
+                    className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50"
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0 }}
@@ -50,7 +50,7 @@ function Modal({
                     >
                         <h3 className="text-lg font-bold">{title}</h3>
 
-                        <div className="my-5 grid grid-cols-12 gap-4 gap-y-3">
+                        <div className="my-5 grid grid-cols-12 gap-4 gap-y-3 ">
                             {children}
                         </div>
 
