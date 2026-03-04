@@ -217,27 +217,74 @@ function ColumnHeader({ title, count, columnId, onAdd }: { title: string; count:
     );
 }
 
-function TaskCardView({ item }: { item: Content }) {
+function TaskCardView({
+    item,
+    onEdit,
+    onDelete,
+}: {
+    item: Content;
+    onEdit?: (item: Content) => void;
+    onDelete?: (item: Content) => void;
+}) {
+    const [open, setOpen] = React.useState(false);
+
     const assigneeName = item.assignee?.name ?? "Unassigned";
 
     const dateLabel =
-        item.status === "scheduled" ? formatShortDate(item.scheduled_at) : formatShortDate(item.due_at);
+        item.status === "scheduled"
+            ? formatShortDate(item.scheduled_at)
+            : formatShortDate(item.due_at);
 
     const dateText = item.status === "scheduled" ? "Schedule" : "Due";
 
     return (
-        <div className="rounded-xl bg-white border-2 shadow-sm p-3">
+        <div className="relative rounded-xl bg-white border-2 shadow-sm p-3">
             <div className="flex items-start justify-between gap-2 border-b pb-2">
-                <div className="text-sm font-semibold text-slate-900 leading-snug">{item.title}</div>
+                <div className="text-sm font-semibold text-slate-900 leading-snug">
+                    {item.title}
+                </div>
+
+                {/* BUTTON */}
                 <button
                     type="button"
                     className="inline-flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-50 text-slate-600"
                     aria-label="More options"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setOpen((v) => !v);
+                    }}
                 >
                     <MoreVertical className="h-4 w-4" />
                 </button>
             </div>
+
+            {/* DROPDOWN */}
+            {open && (
+                <div
+                    className="absolute right-2 top-10 z-50 w-36 rounded-lg border bg-white shadow-lg"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <button
+                        className="w-full px-3 py-2 text-left text-sm hover:bg-slate-50"
+                        onClick={() => {
+                            setOpen(false);
+                            onEdit?.(item);
+                        }}
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                        onClick={() => {
+                            setOpen(false);
+                            onDelete?.(item);
+                        }}
+                    >
+                        Delete
+                    </button>
+                </div>
+            )}
 
             <div className="mt-3 flex items-center gap-2 text-xs text-slate-600">
                 <span className="truncate max-w-[140px]">{assigneeName}</span>
@@ -261,10 +308,17 @@ function TaskCardView({ item }: { item: Content }) {
     );
 }
 
-function SortableTaskCard({ item }: { item: Content }) {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-        id: item.id,
-    });
+function SortableTaskCard({
+    item,
+    onEdit,
+    onDelete,
+}: {
+    item: Content;
+    onEdit?: (item: Content) => void;
+    onDelete?: (item: Content) => void;
+}) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+        useSortable({ id: item.id });
 
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
@@ -274,7 +328,7 @@ function SortableTaskCard({ item }: { item: Content }) {
     return (
         <div ref={setNodeRef} style={style} className={isDragging ? "opacity-40" : ""}>
             <div {...attributes} {...listeners}>
-                <TaskCardView item={item} />
+                <TaskCardView item={item} onEdit={onEdit} onDelete={onDelete} />
             </div>
         </div>
     );
@@ -317,10 +371,21 @@ function Column({
         >
             <ColumnHeader title={column.title} count={column.items.length} columnId={column.id} onAdd={() => onAdd(column.id)} />
 
-            <SortableContext items={column.items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+            <SortableContext
+                items={column.items.map((i) => i.id)}
+                strategy={verticalListSortingStrategy}>
                 <DroppableColumnBody id={column.id}>
                     {column.items.map((item) => (
-                        <SortableTaskCard key={item.id} item={item} />
+                        <SortableTaskCard
+                            key={item.id}
+                            item={item}
+                            onEdit={(item) => {
+                                console.log("edit", item);
+                            }}
+                            onDelete={(item) => {
+                                console.log("delete", item);
+                            }}
+                        />
                     ))}
                 </DroppableColumnBody>
             </SortableContext>
@@ -339,7 +404,6 @@ type Props = {
 
 export default function WorkspaceBoard({ loading, columns, onCreate, onMove, onReorderUIOnly }: Props) {
     const [activeId, setActiveId] = useState<number | null>(null);
-    const [createOpen, setCreateOpen] = useState(false);
 
     const [isOpen, setIsOpen] = useState(false);
     const [formData, setFormData] = useState<ContentFormData>(defaultContentFormData);
@@ -378,9 +442,6 @@ export default function WorkspaceBoard({ loading, columns, onCreate, onMove, onR
     const activeItem = useMemo(() => {
         return activeId ? getItemById(localColumns, activeId) : null;
     }, [activeId, localColumns]);
-
-    const openCreate = () => setCreateOpen(true);
-    const closeCreate = () => setCreateOpen(false);
 
     const onAdd = (_columnId: ContentStatus) => {
         setFormData(defaultContentFormData);
